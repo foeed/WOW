@@ -254,7 +254,13 @@ export default function Home() {
   const playingView = session?.user && activeTab === 'play';
 
   return (
-    <main className={`min-h-screen ${playingView ? 'px-2 pb-3 pt-2' : 'mx-auto max-w-6xl px-4 pb-10 pt-6'}`}>
+    <main
+      className={
+        playingView
+          ? 'flex h-dvh flex-col overflow-hidden px-2 pb-2 pt-2'
+          : 'mx-auto max-w-6xl px-4 pb-10 pt-6'
+      }
+    >
       {showWowLoading && (
         <div className="fixed inset-0 z-[5000] grid place-items-center bg-[radial-gradient(circle_at_50%_45%,rgba(187,93,255,0.3),rgba(6,3,15,0.96)_50%)]">
           <div className="animate-wow-loader font-orbitron text-5xl font-extrabold tracking-[0.08em] text-white drop-shadow-[0_0_20px_rgba(187,93,255,0.85)] md:text-7xl">
@@ -263,7 +269,11 @@ export default function Home() {
         </div>
       )}
 
-      <nav className="sticky top-0 z-30 mb-3 rounded-2xl border border-slate-800/90 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
+      <nav
+        className={`z-30 rounded-2xl border border-slate-800/90 bg-slate-950/90 px-4 py-3 backdrop-blur-xl ${
+          playingView ? 'mb-2 shrink-0' : 'sticky top-0 mb-3'
+        }`}
+      >
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="wow-title text-2xl md:text-3xl">WOW</h1>
@@ -302,7 +312,7 @@ export default function Home() {
           )}
         </div>
 
-        {session?.user && (
+        {session?.user && !playingView && (
           <div className="mt-3 flex flex-wrap gap-2 lg:hidden">
             {TABS.map((tab) => (
               <button
@@ -322,8 +332,12 @@ export default function Home() {
       </nav>
 
       {session?.user ? (
-        <section className="space-y-4">
-          {activeTab === 'play' && <AviatorGame />}
+        <section className={playingView ? 'flex-1 min-h-0' : 'space-y-4'}>
+          {activeTab === 'play' && (
+            <div className="h-full min-h-0">
+              <AviatorGame />
+            </div>
+          )}
           {activeTab === 'stats' && <PlayerStats user={user} userId={session.user.id} />}
           {activeTab === 'leaderboard' && <Leaderboard />}
           {activeTab === 'ocr' && <OcrScanner />}

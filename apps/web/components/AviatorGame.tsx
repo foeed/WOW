@@ -41,7 +41,7 @@ interface SideFeedRow {
 const R3FGameScene = dynamic(() => import('./R3FGameScene').then((mod) => mod.R3FGameScene), {
   ssr: false,
   loading: () => (
-    <div className="grid h-full min-h-[420px] place-items-center bg-slate-950 text-sm text-slate-400">
+    <div className="grid h-full min-h-0 place-items-center bg-slate-950 text-sm text-slate-400">
       Initializing 3D scene...
     </div>
   ),
@@ -52,7 +52,7 @@ const CRASH_MAX = 8.5;
 const ROUND_LOADING_STEP_MS = 95;
 const ROUND_COUNTDOWN_SECONDS = 3;
 const TICK_MS = 70;
-const MAX_TABLE_ROWS = 28;
+const MAX_TABLE_ROWS = 16;
 const QUICK_BETS = [1, 2, 5, 10];
 const AXIS_SECONDS = [0, 3, 6, 9, 12, 15, 18];
 const MULTIPLIER_START = 1;
@@ -532,43 +532,43 @@ export function AviatorGame(props: AviatorGameProps) {
       : 'Start Round';
 
   return (
-    <section className="space-y-2">
-      <div className="flex gap-3 overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/80 px-3 py-2">
+    <section className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-2">
+      <div className="flex gap-2 overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/80 px-2 py-1.5">
         {history.map((value, idx) => (
-          <span key={`${value}-${idx}`} style={{ color: oddColor(value) }} className="whitespace-nowrap text-sm font-bold">
+          <span key={`${value}-${idx}`} style={{ color: oddColor(value) }} className="whitespace-nowrap text-xs font-bold">
             {formatOdd(value)}
           </span>
         ))}
       </div>
 
-      <div className="grid min-h-[calc(100vh-185px)] gap-2 xl:grid-cols-[320px_minmax(0,1fr)]">
-        <aside className="grid h-full min-h-[380px] grid-rows-[auto_auto_auto_1fr] overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-900 to-black">
-          <div className="grid grid-cols-3 gap-2 p-3">
-            <button className="rounded-full border border-slate-700 bg-slate-700/60 px-2 py-2 text-sm font-semibold text-white">All Bets</button>
-            <button className="rounded-full border border-slate-800 bg-slate-900 px-2 py-2 text-sm text-slate-300">Round</button>
-            <button className="rounded-full border border-slate-800 bg-slate-900 px-2 py-2 text-sm text-slate-300">Live</button>
+      <div className="grid min-h-0 gap-2 grid-rows-[minmax(160px,0.36fr)_minmax(0,1fr)] sm:grid-rows-[minmax(180px,0.4fr)_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)] xl:grid-rows-1">
+        <aside className="grid h-full min-h-0 grid-rows-[auto_auto_auto_minmax(0,1fr)] overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-900 to-black">
+          <div className="grid grid-cols-3 gap-1 p-2">
+            <button className="rounded-full border border-slate-700 bg-slate-700/60 px-2 py-1 text-xs font-semibold text-white">All Bets</button>
+            <button className="rounded-full border border-slate-800 bg-slate-900 px-2 py-1 text-xs text-slate-300">Round</button>
+            <button className="rounded-full border border-slate-800 bg-slate-900 px-2 py-1 text-xs text-slate-300">Live</button>
           </div>
 
-          <div className="mx-3 mb-2 flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-3">
+          <div className="mx-2 mb-1.5 flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-2">
             <div className="text-xs text-slate-400">{roundSummary.rowCount} Bets</div>
             <div className="text-right">
-              <div className="text-2xl font-extrabold text-slate-100">{roundSummary.totalWin.toFixed(2)}</div>
+              <div className="text-xl font-extrabold text-slate-100">{roundSummary.totalWin.toFixed(2)}</div>
               <div className="text-xs text-slate-400">Total win USD</div>
             </div>
           </div>
 
-          <div className="grid grid-cols-[1.3fr_1fr_0.7fr_1fr] gap-2 border-y border-slate-800 px-3 py-2 text-[11px] uppercase tracking-wide text-slate-400">
+          <div className="grid grid-cols-[1.3fr_1fr_0.7fr_1fr] gap-1 border-y border-slate-800 px-2 py-1.5 text-[10px] uppercase tracking-wide text-slate-400">
             <span>Player</span>
             <span>Bet USD</span>
             <span>X</span>
             <span>Win USD</span>
           </div>
 
-          <div className="space-y-1 overflow-y-auto p-2">
+          <div className="space-y-1 overflow-hidden p-1.5">
             {bets.map((row) => (
               <div
                 key={row.id}
-                className={`grid grid-cols-[1.3fr_1fr_0.7fr_1fr] items-center gap-2 rounded-full border px-3 py-1.5 text-sm ${
+                className={`grid grid-cols-[1.3fr_1fr_0.7fr_1fr] items-center gap-1 rounded-full border px-2 py-1 text-[11px] ${
                   row.status === 'won'
                     ? 'border-lime-700 bg-gradient-to-r from-lime-950/80 to-slate-950 text-lime-200'
                     : row.status === 'lost'
@@ -579,7 +579,7 @@ export function AviatorGame(props: AviatorGameProps) {
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <span className="grid h-6 w-6 place-items-center rounded-full bg-gradient-to-br from-rose-400 to-rose-900 text-[10px] font-bold text-white">
+                  <span className="grid h-5 w-5 place-items-center rounded-full bg-gradient-to-br from-rose-400 to-rose-900 text-[9px] font-bold text-white">
                     {row.player.charAt(0).toUpperCase()}
                   </span>
                   {row.player}
@@ -592,8 +592,8 @@ export function AviatorGame(props: AviatorGameProps) {
           </div>
         </aside>
 
-        <div className="grid h-full min-h-[620px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-2xl border border-slate-800 bg-slate-950">
-          <div className="flex items-center justify-between bg-amber-500 px-4 py-1 text-sm font-extrabold tracking-wide text-amber-100">
+        <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-2xl border border-slate-800 bg-slate-950">
+          <div className="flex items-center justify-between bg-amber-500 px-3 py-1 text-xs font-extrabold tracking-wide text-amber-100 sm:text-sm">
             <span>R3F ROCKET MODE</span>
             <div className="flex gap-1 rounded-full border border-amber-200/40 bg-amber-500/20 p-1 text-[11px]">
               <button
@@ -626,9 +626,9 @@ export function AviatorGame(props: AviatorGameProps) {
               ))}
             </div>
 
-            <div className="pointer-events-none absolute left-1/2 top-[40%] z-20 -translate-x-1/2 -translate-y-1/2 text-5xl font-black text-slate-100 drop-shadow-[0_0_24px_rgba(255,255,255,0.3)] md:text-7xl">
+            <div className="pointer-events-none absolute left-1/2 top-[40%] z-20 -translate-x-1/2 -translate-y-1/2 text-4xl font-black text-slate-100 drop-shadow-[0_0_24px_rgba(255,255,255,0.3)] md:text-6xl">
               {formatOdd(multiplier)}
-              <div className="mt-1 text-center text-sm font-medium text-slate-300">Current Payout</div>
+              <div className="mt-1 text-center text-xs font-medium text-slate-300 md:text-sm">Current Payout</div>
             </div>
 
             {roundState === 'loading' && (
@@ -646,7 +646,7 @@ export function AviatorGame(props: AviatorGameProps) {
             )}
 
             {roundState === 'countdown' && (
-              <div className="pointer-events-none absolute inset-x-0 top-7 z-30 text-center text-2xl font-black tracking-wide text-amber-200 drop-shadow-[0_0_14px_rgba(251,191,36,0.45)]">
+              <div className="pointer-events-none absolute inset-x-0 top-5 z-30 text-center text-xl font-black tracking-wide text-amber-200 drop-shadow-[0_0_14px_rgba(251,191,36,0.45)] md:text-2xl">
                 ROCKET LAUNCH IN {countdown}
               </div>
             )}
@@ -671,7 +671,7 @@ export function AviatorGame(props: AviatorGameProps) {
               ))}
             </div>
 
-            <div className="pointer-events-none absolute inset-x-8 bottom-3 z-20">
+            <div className="pointer-events-none absolute inset-x-6 bottom-2 z-20 sm:inset-x-8 sm:bottom-3">
               <div className="relative h-6">
                 <div className="absolute inset-x-0 top-2 h-[2px] bg-slate-600/80" />
                 <div className="wow-timeline-cursor absolute top-[3px] h-4 w-4 -translate-x-1/2 rounded-full border border-amber-200 bg-amber-400/90" style={{ left: `${timelineCursorPercent}%` }} />
@@ -692,24 +692,24 @@ export function AviatorGame(props: AviatorGameProps) {
             </div>
           </div>
 
-          <div className="bg-wow-panel p-4">
-            <div className="mb-3 flex justify-center gap-2">
-              <button className="min-w-[100px] rounded-full border border-slate-700 bg-slate-700 px-4 py-1.5 text-sm font-bold text-white">Bet</button>
-              <button className="min-w-[100px] rounded-full border border-slate-700 bg-slate-900 px-4 py-1.5 text-sm font-semibold text-slate-300">Manual</button>
+          <div className="bg-wow-panel p-2.5 sm:p-3">
+            <div className="mb-2 flex justify-center gap-2">
+              <button className="min-w-[90px] rounded-full border border-slate-700 bg-slate-700 px-3 py-1 text-xs font-bold text-white sm:min-w-[100px] sm:px-4 sm:py-1.5 sm:text-sm">Bet</button>
+              <button className="min-w-[90px] rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-300 sm:min-w-[100px] sm:px-4 sm:py-1.5 sm:text-sm">Manual</button>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-[auto_auto_minmax(180px,220px)] md:items-center md:justify-center">
+            <div className="grid gap-2 md:grid-cols-[auto_auto_minmax(180px,220px)] md:items-center md:justify-center">
               <div className="flex items-center overflow-hidden rounded-full border border-slate-700 bg-slate-950">
                 <button
                   onClick={() => setWager((value) => Math.max(0.1, parseFloat((value - 1).toFixed(2))))}
-                  className="h-10 w-10 text-lg text-slate-200 hover:bg-slate-800"
+                  className="h-8 w-8 text-base text-slate-200 hover:bg-slate-800 sm:h-10 sm:w-10 sm:text-lg"
                 >
                   -
                 </button>
-                <span className="min-w-[76px] text-center font-bold text-slate-100">{wager.toFixed(2)}</span>
+                <span className="min-w-[66px] text-center text-sm font-bold text-slate-100 sm:min-w-[76px] sm:text-base">{wager.toFixed(2)}</span>
                 <button
                   onClick={() => setWager((value) => parseFloat((value + 1).toFixed(2)))}
-                  className="h-10 w-10 text-lg text-slate-200 hover:bg-slate-800"
+                  className="h-8 w-8 text-base text-slate-200 hover:bg-slate-800 sm:h-10 sm:w-10 sm:text-lg"
                 >
                   +
                 </button>
@@ -720,7 +720,7 @@ export function AviatorGame(props: AviatorGameProps) {
                   <button
                     key={amount}
                     onClick={() => quickBet(amount)}
-                    className="rounded-full border border-slate-700 bg-slate-900 py-1 text-sm font-semibold text-slate-300"
+                    className="rounded-full border border-slate-700 bg-slate-900 py-1 text-xs font-semibold text-slate-300 sm:text-sm"
                   >
                     {amount}
                   </button>
@@ -738,12 +738,12 @@ export function AviatorGame(props: AviatorGameProps) {
                 onClick={handleMainButton}
                 disabled={roundState === 'loading' || roundState === 'countdown'}
               >
-                <span className="text-2xl font-extrabold">{actionLabel}</span>
-                <strong className="text-3xl font-black">{wager.toFixed(2)} USD</strong>
+                <span className="text-xl font-extrabold sm:text-2xl">{actionLabel}</span>
+                <strong className="text-2xl font-black sm:text-3xl">{wager.toFixed(2)} USD</strong>
               </button>
             </div>
 
-            <div className="mt-3 text-center text-sm text-slate-400">{result}</div>
+            <div className="mt-2 text-center text-xs text-slate-400 sm:text-sm">{result}</div>
             {apiNotice && <div className="mt-1 text-center text-xs text-amber-300">{apiNotice}</div>}
             <div className="mt-1 text-center text-xs text-slate-500">Round pool: {roundSummary.totalBet.toFixed(2)} USD</div>
           </div>
