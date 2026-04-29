@@ -619,6 +619,10 @@ export function AviatorGame(props: AviatorGameProps) {
               phase={phase}
               eventKey={sceneEventKey}
             />
+            <div className="pointer-events-none absolute inset-0 wow-cinematic-vignette" />
+            <div className="pointer-events-none absolute inset-0 wow-film-grain" />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-8 wow-cinematic-bar" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 wow-cinematic-bar" />
 
             <div className="pointer-events-none absolute left-3 top-6 z-20 flex h-[62%] flex-col justify-between text-[11px] font-semibold text-slate-300/80 md:text-xs">
               {yAxisMultipliers.map((label, index) => (

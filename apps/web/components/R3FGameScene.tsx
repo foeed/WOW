@@ -98,6 +98,9 @@ function FlightObjects({
   const engineGlowRef = useRef<THREE.Mesh>(null);
   const flameRef = useRef<THREE.Mesh>(null);
   const trailCoreRef = useRef<THREE.Mesh>(null);
+  const engineLightRef = useRef<THREE.PointLight>(null);
+  const heatHazeRef = useRef<THREE.Mesh>(null);
+  const moonRef = useRef<THREE.Mesh>(null);
   const explosionCoreMeshRef = useRef<THREE.Mesh>(null);
   const explosionRingMeshRef = useRef<THREE.Mesh>(null);
   const winRingMeshRef = useRef<THREE.Mesh>(null);
@@ -127,6 +130,16 @@ function FlightObjects({
 
   const curve = useMemo(() => createCurve(curveType), [curveType]);
   const points = useMemo(() => curve.getPoints(160), [curve]);
+  const visiblePoints = useMemo(() => {
+    const inFlight = phase === 'flying' || phase === 'cashed' || phase === 'crashed';
+
+    if (!inFlight) {
+      return points.slice(0, 5);
+    }
+
+    const visibleCount = Math.max(6, Math.floor(points.length * THREE.MathUtils.clamp(progress, 0.02, 1)));
+    return points.slice(0, visibleCount);
+  }, [phase, points, progress]);
 
   useEffect(() => {
     if (eventKey === lastEventKeyRef.current) {
@@ -150,10 +163,13 @@ function FlightObjects({
   useFrame((state, delta) => {
     const rocket = rocketRef.current;
     const engineGlow = engineGlowRef.current;
+    const engineLight = engineLightRef.current;
+    const heatHaze = heatHazeRef.current;
+    const moon = moonRef.current;
     const flame = flameRef.current;
     const trailCore = trailCoreRef.current;
 
-    if (!rocket || !engineGlow || !flame || !trailCore) {
+    if (!rocket || !engineGlow || !flame || !trailCore || !engineLight || !heatHaze || !moon) {
       return;
     }
 
@@ -190,9 +206,20 @@ function FlightObjects({
       0.95 + thrusterLevel * 0.95,
       Math.min(1, delta * 8),
     );
+    engineLight.intensity = THREE.MathUtils.lerp(engineLight.intensity, 0.5 + thrusterLevel * 2.6, Math.min(1, delta * 10));
+    engineLight.distance = THREE.MathUtils.lerp(engineLight.distance, 1.2 + thrusterLevel * 1.4, Math.min(1, delta * 8));
 
     const trailPulse = 0.75 + Math.sin(state.clock.elapsedTime * 16) * 0.2;
     trailCore.scale.y = THREE.MathUtils.lerp(trailCore.scale.y, trailPulse, Math.min(1, delta * 9));
+    heatHaze.scale.set(
+      THREE.MathUtils.lerp(heatHaze.scale.x, 0.7 + thrusterLevel * 0.95, Math.min(1, delta * 9)),
+      THREE.MathUtils.lerp(heatHaze.scale.y, 0.6 + thrusterLevel * 0.78, Math.min(1, delta * 9)),
+      1,
+    );
+    const heatMaterial = heatHaze.material as THREE.MeshBasicMaterial;
+    heatMaterial.opacity = THREE.MathUtils.lerp(heatMaterial.opacity, 0.1 + thrusterLevel * 0.15, Math.min(1, delta * 9));
+    heatHaze.position.x = -1.52 - Math.sin(state.clock.elapsedTime * 12) * 0.04;
+    heatHaze.position.y = Math.sin(state.clock.elapsedTime * 20) * 0.03;
 
     const cameraYTarget = phase === 'flying' ? 0.28 : 0.22;
     state.camera.position.y = THREE.MathUtils.lerp(
@@ -200,7 +227,13 @@ function FlightObjects({
       cameraYTarget + Math.sin(state.clock.elapsedTime * 0.45) * 0.015,
       Math.min(1, delta * 1.8),
     );
+    state.camera.position.z = THREE.MathUtils.lerp(
+      state.camera.position.z,
+      (phase === 'flying' ? 9.9 : 10.1) + Math.sin(state.clock.elapsedTime * 0.37) * 0.03,
+      Math.min(1, delta * 1.4),
+    );
     state.camera.lookAt(0, 0.2, 0);
+    moon.rotation.y += delta * 0.06;
 
     smokeEmitterClockRef.current += delta;
     if (!thrusterActive) {
@@ -311,17 +344,18 @@ function FlightObjects({
 
   return (
     <group>
-      <Line points={points} color="#f4f4ef" lineWidth={3.2} transparent opacity={0.93} />
-      <Line points={points} color="#ffc861" lineWidth={1.0} transparent opacity={0.18} />
+      <Line points={visiblePoints} color="#f4f4ef" lineWidth={3.2} transparent opacity={0.94} />
+      <Line points={visiblePoints} color="#ffc861" lineWidth={1.0} transparent opacity={0.19} />
+      <Line points={points} color="#9ca6b5" lineWidth={0.7} transparent opacity={0.09} />
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.35, 0]}>
         <planeGeometry args={[18, 10]} />
         <meshStandardMaterial color="#1d1c1d" transparent opacity={0.35} />
       </mesh>
 
-      <mesh position={[7.0, 3.28, 0.22]}>
+      <mesh ref={moonRef} position={[7.0, 3.28, 0.22]}>
         <sphereGeometry args={[0.78, 36, 36]} />
-        <meshStandardMaterial color="#f9f3d2" emissive="#ffd77f" emissiveIntensity={0.5} />
+        <meshStandardMaterial color="#f9f3d2" emissive="#ffd77f" emissiveIntensity={0.5} roughness={0.9} metalness={0.04} />
       </mesh>
 
       <mesh position={[7.0, 3.28, 0.18]}>
@@ -363,6 +397,7 @@ function FlightObjects({
           <planeGeometry args={[1.92, 1.36]} />
           <meshBasicMaterial map={rocketTexture} transparent alphaTest={0.08} side={THREE.DoubleSide} />
         </mesh>
+        <pointLight ref={engineLightRef} position={[-0.7, 0, -0.02]} intensity={1.6} distance={2.1} color="#ff9d3d" />
 
         <mesh ref={engineGlowRef} position={[-0.67, 0, -0.03]}>
           <sphereGeometry args={[0.23, 18, 18]} />
@@ -377,6 +412,10 @@ function FlightObjects({
         <mesh ref={trailCoreRef} position={[-1.24, 0, -0.06]} rotation={[0, 0, -Math.PI / 2]}>
           <cylinderGeometry args={[0.055, 0.014, 0.42, 14]} />
           <meshBasicMaterial color="#ffe9b7" transparent opacity={0.84} blending={THREE.AdditiveBlending} />
+        </mesh>
+        <mesh ref={heatHazeRef} position={[-1.52, 0, -0.07]} rotation={[0, 0, -Math.PI / 2]}>
+          <planeGeometry args={[0.52, 0.38]} />
+          <meshBasicMaterial color="#ffd8a8" transparent opacity={0.18} blending={THREE.AdditiveBlending} depthWrite={false} />
         </mesh>
 
         <mesh ref={explosionCoreMeshRef} visible={false}>
@@ -431,13 +470,14 @@ export function R3FGameScene({
       <color attach="background" args={['#090b11']} />
       <fog attach="fog" args={['#090b11', 11, 22]} />
 
-      <ambientLight intensity={0.36} />
-      <hemisphereLight args={['#bddcff', '#0f1114', 0.34]} />
+      <ambientLight intensity={0.32} />
+      <hemisphereLight args={['#bddcff', '#0f1114', 0.3]} />
       <directionalLight position={[3, 6, 5]} intensity={1.02} color="#b0dcff" />
-      <directionalLight position={[-4, -1, -2]} intensity={0.44} color="#ff925f" />
+      <directionalLight position={[-4, -1, -2]} intensity={0.42} color="#ff925f" />
+      <pointLight position={[7, 3.28, 0.35]} intensity={0.5} distance={4} color="#ffe4a5" />
 
-      <Stars radius={80} depth={42} count={560} factor={2.4} saturation={0} fade speed={0.2} />
-      <Sparkles count={10} scale={18} size={1.4} speed={0.16} color="#b7dfff" />
+      <Stars radius={80} depth={42} count={540} factor={2.4} saturation={0} fade speed={0.2} />
+      <Sparkles count={8} scale={18} size={1.25} speed={0.14} color="#b7dfff" />
 
       <Suspense fallback={null}>
         <FlightObjects
