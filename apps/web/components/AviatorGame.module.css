@@ -1,0 +1,359 @@
+.aviatorRoot {
+  display: grid;
+  gap: 10px;
+}
+
+.historyBar {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  white-space: nowrap;
+  background: #0a0e14;
+  border: 1px solid #1a2230;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.historyItem {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 10px;
+}
+
+.betsPanel {
+  background: linear-gradient(180deg, #12171f, #0a0d12 65%);
+  border: 1px solid #202a38;
+  border-radius: 18px;
+  min-height: 760px;
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  overflow: hidden;
+}
+
+.betsTabs {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.tab {
+  background: #0e131a;
+  border: 1px solid #1f2938;
+  border-radius: 999px;
+  padding: 8px 6px;
+  color: #9eb3c8;
+  font-weight: 600;
+}
+
+.tabActive {
+  background: #202733;
+  color: #ffffff;
+}
+
+.totalWinBox {
+  margin: 0 10px 8px;
+  padding: 12px;
+  background: #0c1016;
+  border: 1px solid #1a2230;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.totalWin {
+  color: #d9ecff;
+  font-weight: 800;
+  font-size: 1.8rem;
+  text-align: right;
+}
+
+.muted {
+  color: #8092aa;
+  font-size: 0.85rem;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 0.7fr 1fr;
+  gap: 6px;
+  color: #7f90a6;
+  font-size: 0.82rem;
+  padding: 8px 12px;
+  border-top: 1px solid #1a2230;
+  border-bottom: 1px solid #1a2230;
+}
+
+.rows {
+  overflow: auto;
+  padding: 6px 8px 8px;
+  display: grid;
+  gap: 4px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 0.7fr 1fr;
+  gap: 6px;
+  align-items: center;
+  font-size: 0.95rem;
+  background: #080c12;
+  border: 1px solid #121a25;
+  border-radius: 999px;
+  color: #c9d7e7;
+  padding: 6px 10px;
+}
+
+.playerCol {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 35% 30%, #ff557e, #7b091f);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.rowMine {
+  border-color: #245f2e;
+  background: linear-gradient(90deg, #1a2f1f, #0d1514);
+}
+
+.rowWin {
+  background: linear-gradient(90deg, #2f4a16, #18320f);
+  border-color: #2f6f18;
+}
+
+.gamePanel {
+  background: #0b1017;
+  border: 1px solid #1f2a37;
+  border-radius: 18px;
+  overflow: hidden;
+  min-height: 760px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.modeBar {
+  background: #d39200;
+  color: #ffe2ab;
+  text-align: center;
+  font-weight: 800;
+  padding: 4px 10px;
+  letter-spacing: 0.03em;
+}
+
+.stage {
+  position: relative;
+  background: radial-gradient(circle at 55% 42%, #1d5678 0%, #021424 48%, #00050a 90%);
+  min-height: 540px;
+  border-bottom: 1px solid #1b2430;
+  overflow: hidden;
+}
+
+.rays {
+  position: absolute;
+  inset: -60px;
+  background: repeating-conic-gradient(from 270deg at 0% 100%, rgba(255, 255, 255, 0.06) 0deg 6deg, rgba(0, 0, 0, 0) 6deg 12deg);
+  opacity: 0.95;
+}
+
+.curveSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.fillArea {
+  fill: rgba(175, 7, 29, 0.68);
+}
+
+.curveLine {
+  fill: none;
+  stroke: #ff0048;
+  stroke-width: 4;
+}
+
+.planeBody {
+  fill: #ff0048;
+}
+
+.planeProp {
+  fill: transparent;
+  stroke: #ff0048;
+  stroke-width: 2;
+}
+
+.planePropLine {
+  stroke: #ff678f;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.multiplierCenter {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 900;
+  color: #f3f7fd;
+  text-shadow: 0 4px 30px rgba(255, 255, 255, 0.25);
+  z-index: 2;
+}
+
+.controlBar {
+  background: linear-gradient(180deg, #15181f, #0f1218);
+  padding: 14px 16px 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.switchRow {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.modeBtn {
+  border: 1px solid #222b37;
+  background: #0f131a;
+  color: #c6d2df;
+  border-radius: 999px;
+  padding: 6px 18px;
+  min-width: 100px;
+  font-weight: 700;
+}
+
+.modeBtnActive {
+  background: #262f3b;
+  color: #ffffff;
+}
+
+.bettingRow {
+  display: grid;
+  grid-template-columns: auto auto minmax(180px, 220px);
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.amountControl {
+  display: flex;
+  align-items: center;
+  background: #0a0f15;
+  border: 1px solid #252f3d;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.amountControl button {
+  border: 0;
+  background: transparent;
+  color: #c8d8ea;
+  width: 38px;
+  height: 38px;
+  font-size: 1.2rem;
+}
+
+.amountControl span {
+  min-width: 74px;
+  text-align: center;
+  color: #dde7f3;
+  font-weight: 700;
+}
+
+.quickRow {
+  display: grid;
+  grid-template-columns: repeat(2, 48px);
+  gap: 6px;
+}
+
+.quickRow button {
+  border: 1px solid #202838;
+  border-radius: 999px;
+  background: #0b1017;
+  color: #9fb0c4;
+  padding: 6px 0;
+  font-weight: 700;
+}
+
+.betButton {
+  border: 1px solid #4b9b26;
+  border-radius: 14px;
+  background: #2bb10b;
+  color: #f5ffeb;
+  padding: 10px 18px;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.betButton strong {
+  font-size: 2rem;
+}
+
+.betButtonCash {
+  border-color: #ef9900;
+  background: #e98800;
+}
+
+.resultText {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #9cb0c8;
+  min-height: 20px;
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .betsPanel {
+    min-height: 360px;
+  }
+
+  .gamePanel {
+    min-height: 620px;
+  }
+}
+
+@media (max-width: 760px) {
+  .multiplierCenter {
+    font-size: 3.2rem;
+  }
+
+  .stage {
+    min-height: 380px;
+  }
+
+  .bettingRow {
+    grid-template-columns: 1fr;
+  }
+
+  .quickRow {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .betButton {
+    width: 100%;
+  }
+}
