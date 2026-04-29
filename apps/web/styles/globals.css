@@ -1,0 +1,219 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+:root {
+  --bg: #06030f;
+  --bg-elev: #120825;
+  --bg-soft: #1a0f31;
+  --text: #f6f1ff;
+  --muted: #b8a9da;
+  --purple-neon: #bb5dff;
+  --pink-neon: #ff45de;
+  --cyan-neon: #45f8ff;
+  --green-neon: #23ffb9;
+  --danger: #ff5d8f;
+  --border: #3a1f5f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#__next {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 10% 15%, rgba(187, 93, 255, 0.22), transparent 40%),
+    radial-gradient(circle at 85% 10%, rgba(69, 248, 255, 0.2), transparent 35%),
+    radial-gradient(circle at 70% 80%, rgba(255, 69, 222, 0.18), transparent 45%),
+    var(--bg);
+}
+
+.wow-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 16px 56px;
+}
+
+.wow-header h1 {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.08em;
+  margin: 0 0 8px;
+  font-size: clamp(2rem, 3vw, 3rem);
+  text-transform: uppercase;
+  color: var(--text);
+  text-shadow: 0 0 22px rgba(187, 93, 255, 0.85);
+}
+
+.wow-subtitle {
+  margin: 0;
+  color: var(--muted);
+  max-width: 760px;
+}
+
+.wow-card {
+  background: linear-gradient(165deg, rgba(26, 15, 49, 0.95), rgba(11, 5, 23, 0.95));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 0 26px rgba(133, 52, 204, 0.25);
+}
+
+.wow-card + .wow-card {
+  margin-top: 20px;
+}
+
+.wow-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.wow-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.wow-auth-toggle,
+.wow-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.wow-btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-weight: 700;
+  font-family: 'Space Grotesk', sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.wow-btn:hover {
+  transform: translateY(-1px);
+}
+
+.wow-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+  transform: none;
+}
+
+.wow-btn-primary {
+  color: #12041f;
+  background: linear-gradient(90deg, var(--purple-neon), var(--pink-neon));
+  box-shadow: 0 0 20px rgba(209, 104, 255, 0.5);
+}
+
+.wow-btn-secondary {
+  background: #24143f;
+  color: var(--text);
+  border: 1px solid #4f2f7f;
+}
+
+.wow-btn-neon {
+  color: #021012;
+  background: linear-gradient(90deg, var(--cyan-neon), var(--green-neon));
+  box-shadow: 0 0 20px rgba(69, 248, 255, 0.5);
+}
+
+.wow-tab-active {
+  background: linear-gradient(90deg, var(--purple-neon), var(--pink-neon));
+  color: #130320;
+}
+
+.wow-field {
+  display: block;
+}
+
+.wow-label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 8px;
+  font-weight: 500;
+}
+
+.wow-input {
+  width: 100%;
+  border: 1px solid #4f2f7f;
+  border-radius: 10px;
+  background: #160b2c;
+  color: var(--text);
+  padding: 12px;
+  font: inherit;
+}
+
+.wow-message {
+  margin-top: 14px;
+  color: var(--muted);
+}
+
+.wow-message-error {
+  color: #ff9fbe;
+}
+
+.wow-status {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #7442b9;
+  background: rgba(87, 40, 156, 0.25);
+}
+
+.wow-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.wow-table th,
+.wow-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(129, 84, 190, 0.3);
+}
+
+.wow-table th {
+  color: var(--muted);
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.wow-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 1px solid #5f339d;
+  background: rgba(143, 66, 220, 0.2);
+}
+
+.wow-hero-glow {
+  animation: wowPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes wowPulse {
+  0%,
+  100% {
+    text-shadow: 0 0 18px rgba(187, 93, 255, 0.6);
+  }
+  50% {
+    text-shadow: 0 0 36px rgba(255, 69, 222, 0.8);
+  }
+}
+
+@media (max-width: 900px) {
+  .wow-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .wow-shell {
+    padding-top: 20px;
+  }
+}

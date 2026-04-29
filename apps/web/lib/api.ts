@@ -1,31 +1,42 @@
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '');
+
+function apiUrl(path: string): string {
+  if (API_BASE) return `${API_BASE}${path}`;
+  return path;
+}
+
+async function request(path: string, init?: RequestInit) {
+  const response = await fetch(apiUrl(path), init);
+  const data = await response.json();
+
+  if (!response.ok || data?.error) {
+    const message = data?.error || `Request failed with status ${response.status}`;
+    throw new Error(message);
+  }
+
+  return data;
+}
+
 export async function startGame(wager: number) {
-  const response = await fetch('/api/game/start', {
+  return request('/game/start', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ wager })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ wager }),
   });
-  return response.json();
 }
 
 export async function cashOut(gameId: string, multiplier: number) {
-  const response = await fetch('/api/game/cashout', {
+  return request('/game/cashout', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ game_id: gameId, multiplier })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ game_id: gameId, multiplier }),
   });
-  return response.json();
 }
 
 export async function getLeaderboard() {
-  const response = await fetch('/api/game/leaderboard');
-  return response.json();
+  return request('/game/leaderboard');
 }
 
 export async function getUserStats(userId: string) {
-  const response = await fetch(`/api/game/stats/${userId}`);
-  return response.json();
+  return request(`/game/stats/${userId}`);
 }

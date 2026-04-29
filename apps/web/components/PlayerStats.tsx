@@ -1,14 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { User } from '../types';
+import { getUserStats } from '../lib/api';
 
 interface PlayerStatsProps {
   userId?: string;
   user?: User | null;
 }
 
+interface UserGameStats {
+  totalGames: number;
+  wins: number;
+  losses: number;
+}
+
 export function PlayerStats(props: PlayerStatsProps) {
-  const [stats, setStats] = useState<User | null>(props.user ?? null);
+  const [stats, setStats] = useState<UserGameStats | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (props.userId) {
@@ -20,80 +28,76 @@ export function PlayerStats(props: PlayerStatsProps) {
     if (!props.userId) return;
 
     setLoading(true);
+    setError('');
     try {
-      const response = await fetch(`/api/game/stats/${props.userId}`);
-      const data = await response.json();
-      if (data && !data.error) {
-        setStats(data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch stats:', error);
+      const data = await getUserStats(props.userId);
+      setStats({
+        totalGames: data.totalGames ?? 0,
+        wins: data.wins ?? 0,
+        losses: data.losses ?? 0,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch your stats.');
     } finally {
       setLoading(false);
     }
   };
 
-  if (!stats) {
-    return null;
-  }
+  const winRate = useMemo(() => {
+    if (!stats || stats.totalGames === 0) return 0;
+    return (stats.wins / stats.totalGames) * 100;
+  }, [stats]);
+
+  const user = props.user;
 
   return (
-    <section style={{ padding: 24, border: '1px solid #333', borderRadius: 14, marginTop: 20, background: '#10131b' }}>
-      <h2 style={{ marginTop: 0 }}>Your Stats</h2>
+    <section className="wow-card">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+        <h2 style={{ margin: 0 }}>Pilot Stats</h2>
+        <button className="wow-btn wow-btn-secondary" onClick={fetchStats} disabled={loading || !props.userId}>
+          {loading ? 'Refreshing...' : 'Refresh'}
+        </button>
+      </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 16, marginBottom: 16 }}>
-        <div style={{ padding: 12, background: '#0f1724', borderRadius: 8, borderLeft: '3px solid #15c39a' }}>
-          <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Balance</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: '#15c39a' }}>
-            ${stats.balance.toFixed(2)}
+      {error && <div className="wow-message wow-message-error">{error}</div>}
+
+      <div className="wow-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
+        <div className="wow-status">
+          <div className="wow-label">Balance</div>
+          <div style={{ fontSize: 26, fontWeight: 700, color: '#23ffb9' }}>${(user?.balance ?? 0).toFixed(2)}</div>
+        </div>
+
+        <div className="wow-status">
+          <div className="wow-label">Total Games</div>
+          <div style={{ fontSize: 26, fontWeight: 700 }}>{stats?.totalGames ?? 0}</div>
+        </div>
+
+        <div className="wow-status">
+          <div className="wow-label">Wins / Losses</div>
+          <div style={{ fontSize: 26, fontWeight: 700 }}>
+            {stats?.wins ?? 0} / {stats?.losses ?? 0}
           </div>
         </div>
 
-        <div style={{ padding: 12, background: '#0f1724', borderRadius: 8, borderLeft: '3px solid #2196f3' }}>
-          <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Games Played</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: '#2196f3' }}>
-            {stats.games_played}
-          </div>
+        <div className="wow-status">
+          <div className="wow-label">Win Rate</div>
+          <div style={{ fontSize: 26, fontWeight: 700, color: '#45f8ff' }}>{winRate.toFixed(1)}%</div>
         </div>
 
-        <div style={{ padding: 12, background: '#0f1724', borderRadius: 8, borderLeft: '3px solid #ff9800' }}>
-          <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Win Rate</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: '#ff9800' }}>
-            {stats.win_rate.toFixed(1)}%
-          </div>
+        <div className="wow-status">
+          <div className="wow-label">Total Wagered</div>
+          <div style={{ fontSize: 26, fontWeight: 700, color: '#ff7bff' }}>${(user?.total_wagered ?? 0).toFixed(2)}</div>
         </div>
 
-        <div style={{ padding: 12, background: '#0f1724', borderRadius: 8, borderLeft: '3px solid #f44336' }}>
-          <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Total Wagered</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: '#f44336' }}>
-            ${stats.total_wagered.toFixed(2)}
-          </div>
-        </div>
-
-        <div style={{ padding: 12, background: '#0f1724', borderRadius: 8, borderLeft: '3px solid #4caf50' }}>
-          <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Total Won</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: '#4caf50' }}>
-            ${stats.total_won.toFixed(2)}
-          </div>
-        </div>
-
-        <div style={{ padding: 12, background: '#0f1724', borderRadius: 8, borderLeft: '3px solid #9c27b0' }}>
-          <div style={{ fontSize: 12, color: '#999', marginBottom: 4 }}>Profit/Loss</div>
-          <div
-            style={{
-              fontSize: 22,
-              fontWeight: 700,
-              color: stats.total_won >= stats.total_wagered ? '#4caf50' : '#f44336'
-            }}
-          >
-            ${(stats.total_won - stats.total_wagered).toFixed(2)}
-          </div>
+        <div className="wow-status">
+          <div className="wow-label">Total Won</div>
+          <div style={{ fontSize: 26, fontWeight: 700, color: '#23ffb9' }}>${(user?.total_won ?? 0).toFixed(2)}</div>
         </div>
       </div>
 
-      {stats.created_at && (
-        <div style={{ fontSize: 12, color: '#666' }}>
-          Member since {new Date(stats.created_at).toLocaleDateString()}
+      {user?.created_at && (
+        <div style={{ marginTop: 14, color: '#b8a9da', fontSize: 13 }}>
+          Member since {new Date(user.created_at).toLocaleDateString()}
         </div>
       )}
     </section>

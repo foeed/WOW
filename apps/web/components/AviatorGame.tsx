@@ -23,16 +23,14 @@ export function AviatorGame(props: AviatorGameProps) {
   const randomCrashPoint = () => Math.random() * (CRASH_MAX - CRASH_MIN) + CRASH_MIN;
 
   useEffect(() => {
-    if (!playing) {
-      return;
-    }
+    if (!playing) return;
 
     const interval = window.setInterval(() => {
       setMultiplier((current) => {
         const next = current + current * 0.015 + 0.02;
         if (next >= crashAt) {
           window.clearInterval(interval);
-          setResult('CRASHED! You lost.');
+          setResult('Rocket crashed. Round lost.');
           setCrashed(true);
           setPlaying(false);
           return crashAt;
@@ -46,12 +44,12 @@ export function AviatorGame(props: AviatorGameProps) {
 
   const handleStart = () => {
     if (wager <= 0) {
-      setResult('Wager must be greater than 0');
+      setResult('Wager must be greater than 0.');
       return;
     }
-    if (props.onGameStart) {
-      props.onGameStart(wager);
-    }
+
+    props.onGameStart?.(wager);
+
     setMultiplier(1.0);
     setCrashAt(randomCrashPoint());
     setResult(null);
@@ -61,112 +59,69 @@ export function AviatorGame(props: AviatorGameProps) {
   };
 
   const handleCashOut = () => {
-    if (!playing) {
-      return;
-    }
-    if (props.onGameCashOut) {
-      props.onGameCashOut(multiplier);
-    }
+    if (!playing) return;
+
+    props.onGameCashOut?.(multiplier);
     setCashOut(multiplier);
-    setResult(`Cashed out at ${multiplier.toFixed(2)}x! Profit: $${(wager * multiplier - wager).toFixed(2)}`);
+    setResult(`Cashed out at ${multiplier.toFixed(2)}x. Profit: $${(wager * multiplier - wager).toFixed(2)}`);
     setPlaying(false);
   };
 
   return (
-    <section style={{ padding: 24, border: '1px solid #333', borderRadius: 14, marginTop: 20, background: '#10131b' }}>
-      <h2 style={{ marginTop: 0 }}>Aviator Rocket</h2>
+    <section className="wow-card">
+      <h2 style={{ marginTop: 0 }}>WOW Flight Deck</h2>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+      <div className="wow-grid wow-grid-2" style={{ marginBottom: 20 }}>
         <div>
-          <label style={{ display: 'block', fontSize: 14, color: '#999', marginBottom: 6 }}>
-            Current Multiplier
-          </label>
-          <div style={{ fontSize: 32, fontWeight: 700, color: crashed ? '#ff6b6b' : '#15c39a' }}>
+          <div className="wow-label">Current Multiplier</div>
+          <div className="wow-hero-glow" style={{ fontSize: 46, fontWeight: 800, color: crashed ? '#ff5d8f' : '#45f8ff' }}>
             {multiplier.toFixed(2)}x
           </div>
         </div>
+
         <div>
-          <label style={{ display: 'block', fontSize: 14, color: '#999', marginBottom: 6 }}>
-            Crash Point
-          </label>
-          <div style={{ fontSize: 32, fontWeight: 700, color: '#bbb' }}>
-            {crashAt.toFixed(2)}x
-          </div>
+          <div className="wow-label">Hidden Crash Point</div>
+          <div style={{ fontSize: 40, fontWeight: 700, color: '#bb5dff' }}>{crashAt.toFixed(2)}x</div>
         </div>
       </div>
 
-      <div style={{ height: 30, width: '100%', background: '#1f2731', borderRadius: 8, overflow: 'hidden', marginBottom: 20 }}>
+      <div style={{ height: 34, width: '100%', background: '#1a0f31', borderRadius: 999, overflow: 'hidden', marginBottom: 20, border: '1px solid #5d2a99' }}>
         <div
           style={{
             height: '100%',
             width: `${progress}%`,
-            background: crashed ? '#ff6b6b' : '#15c39a',
-            transition: 'width 0.1s ease',
+            background: crashed ? 'linear-gradient(90deg, #ff5d8f, #ff9ebf)' : 'linear-gradient(90deg, #45f8ff, #23ffb9)',
+            transition: 'width 0.1s linear',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#000',
-            fontWeight: 700,
-            fontSize: 12
+            color: '#090313',
+            fontWeight: 800,
           }}
         >
-          {progress > 10 ? `${progress.toFixed(0)}%` : ''}
+          {progress > 12 ? `${progress.toFixed(0)}%` : ''}
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16, marginBottom: 20 }}>
-        <div>
-          <label style={{ display: 'block', fontSize: 14, color: '#999', marginBottom: 6 }}>
-            Wager ($)
-          </label>
+      <div className="wow-grid wow-grid-2" style={{ marginBottom: 20 }}>
+        <label className="wow-field">
+          <span className="wow-label">Wager ($)</span>
           <input
+            className="wow-input"
             type="number"
             value={wager}
             onChange={(e) => setWager(parseFloat(e.target.value) || 0)}
             disabled={playing}
             min={0.1}
             step={0.1}
-            style={{
-              width: '100%',
-              padding: 10,
-              borderRadius: 8,
-              border: '1px solid #333',
-              background: '#0f1724',
-              color: '#f4f4f4'
-            }}
           />
-        </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
-          <button
-            onClick={handleStart}
-            disabled={playing}
-            style={{
-              flex: 1,
-              padding: '12px 20px',
-              borderRadius: 8,
-              border: 'none',
-              color: '#fff',
-              background: playing ? '#666' : '#15c39a',
-              fontWeight: 700,
-              cursor: playing ? 'default' : 'pointer'
-            }}
-          >
-            {playing ? 'Round Active' : 'Start Round'}
+        </label>
+
+        <div style={{ display: 'flex', gap: 10, alignItems: 'end' }}>
+          <button className="wow-btn wow-btn-primary" onClick={handleStart} disabled={playing} style={{ flex: 1 }}>
+            {playing ? 'Round Active' : 'Launch'}
           </button>
-          <button
-            onClick={handleCashOut}
-            disabled={!playing}
-            style={{
-              flex: 1,
-              padding: '12px 20px',
-              borderRadius: 8,
-              border: 'none',
-              color: '#fff',
-              background: playing ? '#ff9800' : '#666',
-              fontWeight: 700,
-              cursor: playing ? 'pointer' : 'default'
-            }}
-          >
+          <button className="wow-btn wow-btn-neon" onClick={handleCashOut} disabled={!playing} style={{ flex: 1 }}>
             Cash Out
           </button>
         </div>
@@ -174,14 +129,10 @@ export function AviatorGame(props: AviatorGameProps) {
 
       {result && (
         <div
+          className="wow-status"
           style={{
-            padding: 12,
-            borderRadius: 8,
-            background: multiplier >= crashAt ? '#1a1a2e' : '#0d3d1a',
-            border: `1px solid ${multiplier >= crashAt ? '#ff6b6b' : '#15c39a'}`,
-            color: multiplier >= crashAt ? '#ff6b6b' : '#15c39a',
-            fontWeight: 700,
-            marginTop: 16
+            color: crashed ? '#ff9fbe' : '#d9ceff',
+            borderColor: crashed ? '#ff5d8f' : '#7442b9',
           }}
         >
           {result}
@@ -189,11 +140,10 @@ export function AviatorGame(props: AviatorGameProps) {
       )}
 
       {cashOut && !crashed && (
-        <div style={{ marginTop: 12, fontSize: 14, color: '#bbb' }}>
-          Potential Win: ${(wager * cashOut - wager).toFixed(2)} (Payout: ${(wager * cashOut).toFixed(2)})
+        <div style={{ marginTop: 12, fontSize: 14, color: '#b8a9da' }}>
+          Payout: ${(wager * cashOut).toFixed(2)}
         </div>
       )}
     </section>
   );
 }
-

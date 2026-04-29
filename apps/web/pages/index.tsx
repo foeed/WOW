@@ -1,4 +1,5 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
 import { AviatorGame } from '../components/AviatorGame';
 import { OcrScanner } from '../components/OcrScanner';
@@ -9,34 +10,76 @@ import { User } from '../types';
 type AuthMode = 'email' | 'phone';
 type TabType = 'play' | 'stats' | 'leaderboard' | 'ocr';
 
+function parseAuthHashError(): string | null {
+  if (typeof window === 'undefined') return null;
+
+  const hash = window.location.hash;
+  if (!hash.startsWith('#')) return null;
+
+  const params = new URLSearchParams(hash.slice(1));
+  const code = params.get('error_code');
+  const description = params.get('error_description');
+
+  if (!code && !description) return null;
+
+  let friendly = 'Authentication failed. Please request a new OTP link.';
+
+  if (code === 'otp_expired') {
+    friendly = 'Your sign-in link expired. Request a new OTP and try again.';
+  }
+
+  if (code === 'access_denied') {
+    friendly = 'Access denied for this OTP link. Request a fresh one.';
+  }
+
+  if (description) {
+    friendly = `${friendly} (${description.replace(/\+/g, ' ')})`;
+  }
+
+  window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+  return friendly;
+}
+
 export default function Home() {
   const [authMode, setAuthMode] = useState<AuthMode>('email');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
-  const [session, setSession] = useState<any>(null);
+  const [isError, setIsError] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('play');
 
+  const signedInLabel = useMemo(() => {
+    if (!session?.user) return '';
+    return session.user.email ?? session.user.phone ?? 'Pilot';
+  }, [session]);
+
   useEffect(() => {
+    const hashError = parseAuthHashError();
+    if (hashError) {
+      setMessage(hashError);
+      setIsError(true);
+    }
+
     if (!supabase) {
       setMessage('Supabase configuration missing. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.');
+      setIsError(true);
       return;
     }
 
     const client = supabase;
 
-    const getSession = async () => {
-      const {
-        data: { session }
-      } = await client.auth.getSession();
-      setSession(session);
-    };
+    client.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+    });
 
-    getSession();
-
-    const { data: listener } = client.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+    const { data: listener } = client.auth.onAuthStateChange((event, nextSession) => {
+      setSession(nextSession);
+      if (event === 'SIGNED_IN') {
+        setIsError(false);
+        setMessage('Welcome to WOW. You are signed in.');
+      }
     });
 
     return () => {
@@ -46,28 +89,54 @@ export default function Home() {
 
   const handleSignIn = async () => {
     if (!supabase) {
-      setMessage('Supabase not configured. Set environment variables in apps/web/.env.local.');
+      setIsError(true);
+      setMessage('Supabase is not configured for this environment.');
       return;
     }
 
     const client = supabase;
+
+    setIsError(false);
     setMessage('Sending OTP...');
 
     if (authMode === 'email') {
-      const { error } = await client.auth.signInWithOtp({ email });
+      if (!email.trim()) {
+        setIsError(true);
+        setMessage('Please enter your email address.');
+        return;
+      }
+
+      const { error } = await client.auth.signInWithOtp({
+        email: email.trim(),
+        options: {
+          emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/` : undefined,
+        },
+      });
+
       if (error) {
+        setIsError(true);
         setMessage(error.message);
         return;
       }
-      setMessage('Check your email for the magic link/OTP to sign in.');
-    } else {
-      const { error } = await client.auth.signInWithOtp({ phone });
-      if (error) {
-        setMessage(error.message);
-        return;
-      }
-      setMessage('Check your phone for the OTP code to sign in.');
+
+      setMessage('Check your inbox for the WOW login link.');
+      return;
     }
+
+    if (!phone.trim()) {
+      setIsError(true);
+      setMessage('Please enter your phone number in international format.');
+      return;
+    }
+
+    const { error } = await client.auth.signInWithOtp({ phone: phone.trim() });
+    if (error) {
+      setIsError(true);
+      setMessage(error.message);
+      return;
+    }
+
+    setMessage('Check your phone for your OTP code.');
   };
 
   const handleSignOut = async () => {
@@ -75,51 +144,47 @@ export default function Home() {
       setSession(null);
       return;
     }
+
     await supabase.auth.signOut();
     setSession(null);
     setUser(null);
-    setMessage('Signed out.');
+    setIsError(false);
+    setMessage('Signed out safely.');
   };
 
   return (
-    <main style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 16px', color: '#f4f4f4', fontFamily: 'Arial, sans-serif', minHeight: '100vh', background: '#0b0f16' }}>
-      <header style={{ marginBottom: 32 }}>
-        <h1 style={{ margin: 0, fontSize: 42, marginBottom: 8 }}>🚀 WOW Aviator Rocket</h1>
-        <p style={{ color: '#999', maxWidth: 680, margin: 0 }}>
-          Multiply your bets before the rocket crashes. Test your nerve and timing with real-time multiplier action.
+    <main className="wow-shell">
+      <header className="wow-header" style={{ marginBottom: 30 }}>
+        <h1 className="wow-hero-glow">WOW</h1>
+        <p className="wow-subtitle">
+          Neon-speed crash gameplay with OTP login. Launch, watch the multiplier surge, and cash out before the rocket burns.
         </p>
       </header>
 
       {session?.user ? (
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, padding: '16px 20px', border: '1px solid #333', borderRadius: 10, background: '#10131b' }}>
+        <div className="wow-grid">
+          <div className="wow-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
             <div>
-              <div style={{ fontSize: 14, color: '#999' }}>Signed in as</div>
-              <div style={{ fontSize: 18, fontWeight: 700, marginTop: 4 }}>
-                {session.user.email ?? session.user.phone ?? 'Player'}
-              </div>
+              <div className="wow-label">Signed in as</div>
+              <div style={{ fontWeight: 700, fontSize: 18 }}>{signedInLabel}</div>
             </div>
-            <button onClick={handleSignOut} style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: '#555', color: '#fff', cursor: 'pointer' }}>
-              Sign Out
-            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span className="wow-pill">WOW Pilot</span>
+              <button className="wow-btn wow-btn-secondary" onClick={handleSignOut}>
+                Sign Out
+              </button>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+          <div className="wow-tabs">
             {(['play', 'stats', 'leaderboard', 'ocr'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                style={{
-                  padding: '12px 20px',
-                  borderRadius: 8,
-                  border: 'none',
-                  background: activeTab === tab ? '#15c39a' : '#1f2731',
-                  color: activeTab === tab ? '#000' : '#fff',
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
+                className={`wow-btn ${activeTab === tab ? 'wow-tab-active' : 'wow-btn-secondary'}`}
               >
-                {tab === 'play' ? '🎮 Play' : tab === 'stats' ? '📊 Stats' : tab === 'leaderboard' ? '🏆 Leaderboard' : '📸 OCR'}
+                {tab === 'play' ? 'Play' : tab === 'stats' ? 'Stats' : tab === 'leaderboard' ? 'Leaderboard' : 'OCR'}
               </button>
             ))}
           </div>
@@ -130,93 +195,64 @@ export default function Home() {
           {activeTab === 'ocr' && <OcrScanner />}
         </div>
       ) : (
-        <div>
-          <section style={{ marginBottom: 24, padding: 28, border: '1px solid #333', borderRadius: 14, background: '#10131b' }}>
-            <h2 style={{ marginTop: 0 }}>Sign In to Play</h2>
+        <div className="wow-grid">
+          <section className="wow-card">
+            <h2 style={{ marginTop: 0 }}>Sign In to WOW</h2>
 
-            <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+            <div className="wow-auth-toggle" style={{ marginBottom: 18 }}>
               <button
                 onClick={() => setAuthMode('email')}
-                style={{
-                  padding: '12px 20px',
-                  background: authMode === 'email' ? '#15c39a' : '#1f2731',
-                  color: authMode === 'email' ? '#000' : '#fff',
-                  border: 'none',
-                  borderRadius: 8,
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
+                className={`wow-btn ${authMode === 'email' ? 'wow-tab-active' : 'wow-btn-secondary'}`}
               >
                 Email OTP
               </button>
               <button
                 onClick={() => setAuthMode('phone')}
-                style={{
-                  padding: '12px 20px',
-                  background: authMode === 'phone' ? '#15c39a' : '#1f2731',
-                  color: authMode === 'phone' ? '#000' : '#fff',
-                  border: 'none',
-                  borderRadius: 8,
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
+                className={`wow-btn ${authMode === 'phone' ? 'wow-tab-active' : 'wow-btn-secondary'}`}
               >
                 Phone OTP
               </button>
             </div>
 
             {authMode === 'email' ? (
-              <label style={{ display: 'block', marginBottom: 16 }}>
-                <span style={{ display: 'block', fontSize: 14, color: '#999', marginBottom: 8 }}>Email Address</span>
+              <label className="wow-field" style={{ marginBottom: 16 }}>
+                <span className="wow-label">Email Address</span>
                 <input
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   type="email"
                   placeholder="you@example.com"
-                  style={{ width: '100%', padding: 12, borderRadius: 8, border: '1px solid #333', background: '#0f1724', color: '#f4f4f4', fontSize: 14 }}
+                  className="wow-input"
                 />
               </label>
             ) : (
-              <label style={{ display: 'block', marginBottom: 16 }}>
-                <span style={{ display: 'block', fontSize: 14, color: '#999', marginBottom: 8 }}>Phone Number</span>
+              <label className="wow-field" style={{ marginBottom: 16 }}>
+                <span className="wow-label">Phone Number</span>
                 <input
                   value={phone}
                   onChange={(event) => setPhone(event.target.value)}
                   type="tel"
                   placeholder="+1234567890"
-                  style={{ width: '100%', padding: 12, borderRadius: 8, border: '1px solid #333', background: '#0f1724', color: '#f4f4f4', fontSize: 14 }}
+                  className="wow-input"
                 />
               </label>
             )}
 
-            <button
-              onClick={handleSignIn}
-              style={{
-                width: '100%',
-                padding: '14px 20px',
-                borderRadius: 8,
-                border: 'none',
-                color: '#000',
-                background: '#15c39a',
-                fontWeight: 700,
-                fontSize: 16,
-                cursor: 'pointer'
-              }}
-            >
+            <button onClick={handleSignIn} className="wow-btn wow-btn-primary" style={{ width: '100%', fontSize: 16 }}>
               Send OTP
             </button>
 
-            {message && <p style={{ marginTop: 16, color: '#cbd5e1', fontSize: 14 }}>{message}</p>}
+            {message && <p className={`wow-message ${isError ? 'wow-message-error' : ''}`}>{message}</p>}
           </section>
 
-          <section style={{ padding: 28, border: '1px solid #333', borderRadius: 14, background: '#10131b' }}>
-            <h3>How to Play</h3>
-            <ul style={{ color: '#bbb', lineHeight: 1.8 }}>
-              <li>Sign in with email or phone OTP</li>
-              <li>Place a wager (min $0.10)</li>
-              <li>Watch the multiplier climb</li>
-              <li>Cash out before the rocket crashes</li>
-              <li>Higher multiplier = higher risk & reward</li>
+          <section className="wow-card">
+            <h3 style={{ marginTop: 0 }}>How WOW Works</h3>
+            <ul style={{ color: '#d8cbf4', lineHeight: 1.9, marginBottom: 0, paddingLeft: 20 }}>
+              <li>Login with OTP from email or phone.</li>
+              <li>Set your wager and launch a new round.</li>
+              <li>Track the live multiplier as the rocket climbs.</li>
+              <li>Cash out before crash to lock profit.</li>
+              <li>Use leaderboard and stats to improve strategy.</li>
             </ul>
           </section>
         </div>
@@ -224,4 +260,3 @@ export default function Home() {
     </main>
   );
 }
-
