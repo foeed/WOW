@@ -1,297 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap');
 
-:root {
-  --bg: #06030f;
-  --bg-elev: #120825;
-  --bg-soft: #1a0f31;
-  --text: #f6f1ff;
-  --muted: #b8a9da;
-  --purple-neon: #bb5dff;
-  --pink-neon: #ff45de;
-  --cyan-neon: #45f8ff;
-  --green-neon: #23ffb9;
-  --danger: #ff5d8f;
-  --border: #3a1f5f;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body,
-#__next {
-  margin: 0;
-  min-height: 100%;
-}
-
-body {
-  font-family: 'Space Grotesk', sans-serif;
-  color: var(--text);
-  background:
-    radial-gradient(circle at 10% 15%, rgba(187, 93, 255, 0.22), transparent 40%),
-    radial-gradient(circle at 85% 10%, rgba(69, 248, 255, 0.2), transparent 35%),
-    radial-gradient(circle at 70% 80%, rgba(255, 69, 222, 0.18), transparent 45%),
-    var(--bg);
-}
-
-.wow-shell {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 28px 16px 56px;
-  position: relative;
-}
-
-.wow-shell-full {
-  max-width: 100%;
-  min-height: 100vh;
-  padding: 10px 10px 14px;
-}
-
-.wow-shell-full .wow-header {
-  margin-bottom: 10px !important;
-}
-
-.wow-shell-full .wow-header h1 {
-  font-size: clamp(1.8rem, 2.2vw, 2.4rem);
-}
-
-.wow-shell-full .wow-subtitle {
-  max-width: none;
-  font-size: 0.9rem;
-}
-
-.wow-loader-overlay {
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(circle at 50% 45%, rgba(187, 93, 255, 0.3), rgba(6, 3, 15, 0.96) 50%),
-    #06030f;
-  z-index: 5000;
-  display: grid;
-  place-items: center;
-}
-
-.wow-loader-mark {
-  font-family: 'Orbitron', sans-serif;
-  font-size: clamp(2.2rem, 7vw, 5rem);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #f7eeff;
-  text-shadow: 0 0 18px rgba(187, 93, 255, 0.7), 0 0 40px rgba(69, 248, 255, 0.45);
-  animation: wowLoaderPulse 1s ease-in-out infinite;
-}
-
-.wow-header h1 {
-  font-family: 'Orbitron', sans-serif;
-  letter-spacing: 0.08em;
-  margin: 0 0 8px;
-  font-size: clamp(2rem, 3vw, 3rem);
-  text-transform: uppercase;
-  color: var(--text);
-  text-shadow: 0 0 22px rgba(187, 93, 255, 0.85);
-}
-
-.wow-subtitle {
-  margin: 0;
-  color: var(--muted);
-  max-width: 760px;
-}
-
-.wow-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.wow-toolbar-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.wow-tabbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.wow-card {
-  background: linear-gradient(165deg, rgba(26, 15, 49, 0.95), rgba(11, 5, 23, 0.95));
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 22px;
-  box-shadow: 0 0 26px rgba(133, 52, 204, 0.25);
-}
-
-.wow-card + .wow-card {
-  margin-top: 20px;
-}
-
-.wow-grid {
-  display: grid;
-  gap: 18px;
-}
-
-.wow-grid-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.wow-auth-toggle,
-.wow-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.wow-btn {
-  border: 0;
-  border-radius: 10px;
-  padding: 12px 18px;
-  font-weight: 700;
-  font-family: 'Space Grotesk', sans-serif;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-}
-
-.wow-btn:hover {
-  transform: translateY(-1px);
-}
-
-.wow-btn:disabled {
-  cursor: not-allowed;
-  opacity: 0.58;
-  transform: none;
-}
-
-.wow-btn-primary {
-  color: #12041f;
-  background: linear-gradient(90deg, var(--purple-neon), var(--pink-neon));
-  box-shadow: 0 0 20px rgba(209, 104, 255, 0.5);
-}
-
-.wow-btn-secondary {
-  background: #24143f;
-  color: var(--text);
-  border: 1px solid #4f2f7f;
-}
-
-.wow-btn-neon {
-  color: #021012;
-  background: linear-gradient(90deg, var(--cyan-neon), var(--green-neon));
-  box-shadow: 0 0 20px rgba(69, 248, 255, 0.5);
-}
-
-.wow-tab-active {
-  background: linear-gradient(90deg, var(--purple-neon), var(--pink-neon));
-  color: #130320;
-}
-
-.wow-field {
-  display: block;
-}
-
-.wow-label {
-  display: block;
-  font-size: 13px;
-  color: var(--muted);
-  margin: 0 0 8px;
-  font-weight: 500;
-}
-
-.wow-input {
-  width: 100%;
-  border: 1px solid #4f2f7f;
-  border-radius: 10px;
-  background: #160b2c;
-  color: var(--text);
-  padding: 12px;
-  font: inherit;
-}
-
-.wow-message {
-  margin-top: 14px;
-  color: var(--muted);
-}
-
-.wow-message-error {
-  color: #ff9fbe;
-}
-
-.wow-status {
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #7442b9;
-  background: rgba(87, 40, 156, 0.25);
-}
-
-.wow-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.wow-table th,
-.wow-table td {
-  padding: 12px;
-  border-bottom: 1px solid rgba(129, 84, 190, 0.3);
-}
-
-.wow-table th {
-  color: var(--muted);
-  text-align: left;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-}
-
-.wow-pill {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  border: 1px solid #5f339d;
-  background: rgba(143, 66, 220, 0.2);
-}
-
-.wow-hero-glow {
-  animation: wowPulse 2.6s ease-in-out infinite;
-}
-
-@keyframes wowPulse {
-  0%,
-  100% {
-    text-shadow: 0 0 18px rgba(187, 93, 255, 0.6);
+@layer base {
+  html,
+  body,
+  #__next {
+    @apply min-h-full;
   }
-  50% {
-    text-shadow: 0 0 36px rgba(255, 69, 222, 0.8);
+
+  body {
+    @apply m-0 font-space text-wow-text;
+    background:
+      radial-gradient(circle at 10% 15%, rgba(187, 93, 255, 0.22), transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(69, 248, 255, 0.2), transparent 35%),
+      radial-gradient(circle at 70% 80%, rgba(255, 69, 222, 0.18), transparent 45%),
+      #06030f;
   }
 }
 
-@keyframes wowLoaderPulse {
-  0%,
-  100% {
-    transform: scale(0.96);
-    opacity: 0.8;
+@layer components {
+  .wow-card {
+    @apply rounded-2xl border border-wow-border bg-gradient-to-br from-[#181029]/95 to-[#090513]/95 p-6 shadow-[0_0_26px_rgba(133,52,204,0.25)];
   }
-  50% {
-    transform: scale(1.04);
-    opacity: 1;
+
+  .wow-btn {
+    @apply rounded-xl px-4 py-2.5 font-bold transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .wow-btn-primary {
+    @apply wow-btn bg-gradient-to-r from-wow-purple to-wow-pink text-[#130320] shadow-[0_0_20px_rgba(209,104,255,0.45)];
+  }
+
+  .wow-btn-secondary {
+    @apply wow-btn border border-[#4f2f7f] bg-[#24143f] text-white;
+  }
+
+  .wow-btn-neon {
+    @apply wow-btn bg-gradient-to-r from-wow-cyan to-[#23ffb9] text-[#021012] shadow-[0_0_20px_rgba(69,248,255,0.45)];
+  }
+
+  .wow-pill {
+    @apply inline-flex items-center rounded-full border border-[#5f339d] bg-[rgba(143,66,220,0.2)] px-3 py-1 text-xs;
+  }
+
+  .wow-label {
+    @apply mb-2 block text-xs font-medium text-wow-muted;
+  }
+
+  .wow-input {
+    @apply w-full rounded-xl border border-[#4f2f7f] bg-[#160b2c] p-3 text-wow-text outline-none transition focus:border-wow-cyan;
+  }
+
+  .wow-message {
+    @apply mt-3 text-sm text-wow-muted;
+  }
+
+  .wow-message-error {
+    @apply text-[#ff9fbe];
+  }
+
+  .wow-status {
+    @apply rounded-xl border border-[#7442b9] bg-[rgba(87,40,156,0.25)] p-3;
+  }
+
+  .wow-table {
+    @apply w-full border-collapse;
+  }
+
+  .wow-table th,
+  .wow-table td {
+    @apply border-b border-[rgba(129,84,190,0.3)] p-3;
+  }
+
+  .wow-table th {
+    @apply text-left text-xs uppercase tracking-wider text-wow-muted;
   }
 }
 
-@media (max-width: 900px) {
-  .wow-grid-2 {
-    grid-template-columns: 1fr;
+@layer utilities {
+  .wow-title {
+    @apply font-orbitron uppercase tracking-[0.08em] text-white animate-wow-pulse;
   }
 
-  .wow-shell {
-    padding-top: 20px;
+  .bg-wow-surface {
+    background: linear-gradient(165deg, rgba(26, 15, 49, 0.95), rgba(11, 5, 23, 0.95));
   }
 
-  .wow-toolbar {
-    align-items: flex-start;
-    flex-direction: column;
+  .bg-wow-panel {
+    background: linear-gradient(180deg, #15181f, #0f1218);
   }
 }

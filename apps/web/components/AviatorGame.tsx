@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import styles from './AviatorGame.module.css';
 
 interface AviatorGameProps {
   onGameStart?: (wager: number) => void;
@@ -90,9 +89,10 @@ export function AviatorGame(props: AviatorGameProps) {
     return points;
   }, [progress]);
 
-  const curvePath = useMemo(() => {
-    return chartPoints.map(([x, y], idx) => `${idx === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ');
-  }, [chartPoints]);
+  const curvePath = useMemo(
+    () => chartPoints.map(([x, y], idx) => `${idx === 0 ? 'M' : 'L'} ${x} ${y}`).join(' '),
+    [chartPoints],
+  );
 
   const fillPath = useMemo(() => {
     if (!chartPoints.length) return '';
@@ -172,45 +172,54 @@ export function AviatorGame(props: AviatorGameProps) {
   const quickBet = (amount: number) => setWager(amount);
 
   return (
-    <section className={styles.aviatorRoot}>
-      <div className={styles.historyBar}>
+    <section className="space-y-2">
+      <div className="flex gap-3 overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/80 px-3 py-2">
         {history.map((value, idx) => (
-          <span key={`${value}-${idx}`} style={{ color: oddColor(value) }} className={styles.historyItem}>
+          <span key={`${value}-${idx}`} style={{ color: oddColor(value) }} className="whitespace-nowrap text-sm font-bold">
             {formatOdd(value)}
           </span>
         ))}
       </div>
 
-      <div className={styles.layout}>
-        <aside className={styles.betsPanel}>
-          <div className={styles.betsTabs}>
-            <button className={`${styles.tab} ${styles.tabActive}`}>All Bets</button>
-            <button className={styles.tab}>Previous</button>
-            <button className={styles.tab}>Top</button>
+      <div className="grid min-h-[calc(100vh-185px)] gap-2 xl:grid-cols-[320px_minmax(0,1fr)]">
+        <aside className="grid h-full min-h-[380px] grid-rows-[auto_auto_auto_1fr] overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-900 to-black">
+          <div className="grid grid-cols-3 gap-2 p-3">
+            <button className="rounded-full border border-slate-700 bg-slate-700/60 px-2 py-2 text-sm font-semibold text-white">All Bets</button>
+            <button className="rounded-full border border-slate-800 bg-slate-900 px-2 py-2 text-sm text-slate-300">Previous</button>
+            <button className="rounded-full border border-slate-800 bg-slate-900 px-2 py-2 text-sm text-slate-300">Top</button>
           </div>
 
-          <div className={styles.totalWinBox}>
-            <div>
-              <div className={styles.muted}>549/588 Bets</div>
-            </div>
-            <div>
-              <div className={styles.totalWin}>502.76</div>
-              <div className={styles.muted}>Total win USD</div>
+          <div className="mx-3 mb-2 flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/80 p-3">
+            <div className="text-xs text-slate-400">549/588 Bets</div>
+            <div className="text-right">
+              <div className="text-2xl font-extrabold text-slate-100">502.76</div>
+              <div className="text-xs text-slate-400">Total win USD</div>
             </div>
           </div>
 
-          <div className={styles.tableHeader}>
+          <div className="grid grid-cols-[1.3fr_1fr_0.7fr_1fr] gap-2 border-y border-slate-800 px-3 py-2 text-[11px] uppercase tracking-wide text-slate-400">
             <span>Player</span>
             <span>Bet USD</span>
             <span>X</span>
             <span>Win USD</span>
           </div>
 
-          <div className={styles.rows}>
+          <div className="space-y-1 overflow-y-auto p-2">
             {bets.map((row) => (
-              <div key={row.id} className={`${styles.row} ${row.win ? styles.rowWin : ''} ${row.mine ? styles.rowMine : ''}`}>
-                <span className={styles.playerCol}>
-                  <span className={styles.avatar}>{row.player.charAt(0)}</span>
+              <div
+                key={row.id}
+                className={`grid grid-cols-[1.3fr_1fr_0.7fr_1fr] items-center gap-2 rounded-full border px-3 py-1.5 text-sm ${
+                  row.win
+                    ? 'border-lime-700 bg-gradient-to-r from-lime-950/80 to-slate-950 text-lime-200'
+                    : row.mine
+                    ? 'border-emerald-800 bg-gradient-to-r from-emerald-950/70 to-slate-950 text-emerald-200'
+                    : 'border-slate-800 bg-slate-950 text-slate-200'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <span className="grid h-6 w-6 place-items-center rounded-full bg-gradient-to-br from-rose-400 to-rose-900 text-[10px] font-bold text-white">
+                    {row.player.charAt(0).toUpperCase()}
+                  </span>
                   {row.player}
                 </span>
                 <span>{row.bet.toFixed(2)}</span>
@@ -221,56 +230,78 @@ export function AviatorGame(props: AviatorGameProps) {
           </div>
         </aside>
 
-        <div className={styles.gamePanel}>
-          <div className={styles.modeBar}>FUN MODE</div>
+        <div className="grid h-full min-h-[620px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-2xl border border-slate-800 bg-slate-950">
+          <div className="bg-amber-500 py-1 text-center text-sm font-extrabold tracking-wide text-amber-100">FUN MODE</div>
 
-          <div className={styles.stage}>
-            <div className={styles.rays} />
+          <div className="relative overflow-hidden border-b border-slate-800 bg-[radial-gradient(circle_at_55%_42%,#1d5678_0%,#021424_48%,#00050a_90%)]">
+            <div
+              className="absolute inset-[-60px] opacity-90"
+              style={{
+                background:
+                  'repeating-conic-gradient(from 270deg at 0% 100%, rgba(255,255,255,0.06) 0deg 6deg, rgba(0,0,0,0) 6deg 12deg)',
+              }}
+            />
 
-            <svg viewBox={`0 0 ${STAGE_WIDTH} ${STAGE_HEIGHT}`} className={styles.curveSvg} preserveAspectRatio="none">
-              <path d={fillPath} className={styles.fillArea} />
-              <path d={curvePath} className={styles.curveLine} />
+            <svg viewBox={`0 0 ${STAGE_WIDTH} ${STAGE_HEIGHT}`} className="absolute inset-0 h-full w-full" preserveAspectRatio="none">
+              <path d={fillPath} fill="rgba(175, 7, 29, 0.68)" />
+              <path d={curvePath} fill="none" stroke="#ff0048" strokeWidth={4} />
 
               <g transform={`translate(${planePoint[0]}, ${planePoint[1]}) rotate(-14)`}>
-                <path d="M 0 0 L 56 -14 L 44 -2 L 73 0 L 44 2 L 56 14 Z" className={styles.planeBody} />
-                <circle cx="74" cy="0" r="7" className={styles.planeProp} />
-                <path d="M 74 -8 L 74 8 M 66 0 L 82 0" className={styles.planePropLine} />
+                <path d="M 0 0 L 56 -14 L 44 -2 L 73 0 L 44 2 L 56 14 Z" fill="#ff0048" />
+                <circle cx="74" cy="0" r="7" fill="transparent" stroke="#ff0048" strokeWidth={2} />
+                <path d="M 74 -8 L 74 8 M 66 0 L 82 0" stroke="#ff678f" strokeWidth={2} strokeLinecap="round" />
               </g>
             </svg>
 
-            <div className={styles.multiplierCenter}>{formatOdd(multiplier)}</div>
+            <div className="absolute left-1/2 top-[44%] z-20 -translate-x-1/2 -translate-y-1/2 text-5xl font-black text-slate-100 drop-shadow-[0_0_24px_rgba(255,255,255,0.3)] md:text-7xl">
+              {formatOdd(multiplier)}
+            </div>
           </div>
 
-          <div className={styles.controlBar}>
-            <div className={styles.switchRow}>
-              <button className={`${styles.modeBtn} ${styles.modeBtnActive}`}>Bet</button>
-              <button className={styles.modeBtn}>Auto</button>
+          <div className="bg-wow-panel p-4">
+            <div className="mb-3 flex justify-center gap-2">
+              <button className="min-w-[100px] rounded-full border border-slate-700 bg-slate-700 px-4 py-1.5 text-sm font-bold text-white">Bet</button>
+              <button className="min-w-[100px] rounded-full border border-slate-700 bg-slate-900 px-4 py-1.5 text-sm font-semibold text-slate-300">Auto</button>
             </div>
 
-            <div className={styles.bettingRow}>
-              <div className={styles.amountControl}>
-                <button onClick={() => setWager((v) => Math.max(0.1, parseFloat((v - 1).toFixed(2))))}>-</button>
-                <span>{wager.toFixed(2)}</span>
-                <button onClick={() => setWager((v) => parseFloat((v + 1).toFixed(2)))}>+</button>
+            <div className="grid gap-3 md:grid-cols-[auto_auto_minmax(180px,220px)] md:justify-center md:items-center">
+              <div className="flex items-center overflow-hidden rounded-full border border-slate-700 bg-slate-950">
+                <button
+                  onClick={() => setWager((v) => Math.max(0.1, parseFloat((v - 1).toFixed(2))))}
+                  className="h-10 w-10 text-lg text-slate-200 hover:bg-slate-800"
+                >
+                  -
+                </button>
+                <span className="min-w-[76px] text-center font-bold text-slate-100">{wager.toFixed(2)}</span>
+                <button
+                  onClick={() => setWager((v) => parseFloat((v + 1).toFixed(2)))}
+                  className="h-10 w-10 text-lg text-slate-200 hover:bg-slate-800"
+                >
+                  +
+                </button>
               </div>
 
-              <div className={styles.quickRow}>
-                <button onClick={() => quickBet(1)}>1</button>
-                <button onClick={() => quickBet(2)}>2</button>
-                <button onClick={() => quickBet(5)}>5</button>
-                <button onClick={() => quickBet(10)}>10</button>
+              <div className="grid grid-cols-4 gap-2 md:grid-cols-2">
+                <button onClick={() => quickBet(1)} className="rounded-full border border-slate-700 bg-slate-900 py-1 text-sm font-semibold text-slate-300">1</button>
+                <button onClick={() => quickBet(2)} className="rounded-full border border-slate-700 bg-slate-900 py-1 text-sm font-semibold text-slate-300">2</button>
+                <button onClick={() => quickBet(5)} className="rounded-full border border-slate-700 bg-slate-900 py-1 text-sm font-semibold text-slate-300">5</button>
+                <button onClick={() => quickBet(10)} className="rounded-full border border-slate-700 bg-slate-900 py-1 text-sm font-semibold text-slate-300">10</button>
               </div>
 
               <button
-                className={`${styles.betButton} ${playing ? styles.betButtonCash : ''}`}
+                className={`grid gap-1 rounded-2xl border px-6 py-3 text-center ${
+                  playing
+                    ? 'border-amber-700 bg-amber-500 text-amber-100'
+                    : 'border-lime-700 bg-lime-600 text-lime-100'
+                }`}
                 onClick={playing ? handleCashOut : handleStart}
               >
-                <span>{playing ? 'Cash Out' : 'Bet'}</span>
-                <strong>{wager.toFixed(2)} USD</strong>
+                <span className="text-2xl font-extrabold">{playing ? 'Cash Out' : 'Bet'}</span>
+                <strong className="text-3xl font-black">{wager.toFixed(2)} USD</strong>
               </button>
             </div>
 
-            <div className={styles.resultText}>{result}</div>
+            <div className="mt-3 text-center text-sm text-slate-400">{result}</div>
           </div>
         </div>
       </div>

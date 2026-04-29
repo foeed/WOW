@@ -53,6 +53,13 @@ function parseAuthHashError(): string | null {
   return friendly;
 }
 
+const TABS: { key: TabType; label: string }[] = [
+  { key: 'play', label: 'Play' },
+  { key: 'stats', label: 'Stats' },
+  { key: 'leaderboard', label: 'Leaderboard' },
+  { key: 'ocr', label: 'OCR' },
+];
+
 export default function Home() {
   const [authMode, setAuthMode] = useState<AuthMode>('email');
   const [email, setEmail] = useState('');
@@ -227,76 +234,105 @@ export default function Home() {
     setMessage('Signed out safely.');
   };
 
+  const playingView = session?.user && activeTab === 'play';
+
   return (
-    <main className={`wow-shell ${session?.user && activeTab === 'play' ? 'wow-shell-full' : ''}`}>
+    <main className={`min-h-screen ${playingView ? 'px-2 pb-3 pt-2' : 'mx-auto max-w-6xl px-4 pb-10 pt-6'}`}>
       {showWowLoading && (
-        <div className="wow-loader-overlay" aria-live="polite" aria-label="Loading WOW">
-          <div className="wow-loader-mark">WOW...</div>
+        <div className="fixed inset-0 z-[5000] grid place-items-center bg-[radial-gradient(circle_at_50%_45%,rgba(187,93,255,0.3),rgba(6,3,15,0.96)_50%)]">
+          <div className="animate-wow-loader font-orbitron text-5xl font-extrabold tracking-[0.08em] text-white drop-shadow-[0_0_20px_rgba(187,93,255,0.85)] md:text-7xl">
+            WOW...
+          </div>
         </div>
       )}
-      <header className="wow-header" style={{ marginBottom: 30 }}>
-        <div className="wow-toolbar">
+
+      <nav className="sticky top-0 z-30 mb-3 rounded-2xl border border-slate-800/90 bg-slate-950/90 px-4 py-3 backdrop-blur-xl">
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="wow-hero-glow">WOW</h1>
-            <p className="wow-subtitle">
-              {session?.user && activeTab === 'play'
-                ? 'Aviator Pro Arena'
-                : 'Neon-speed crash gameplay with OTP login. Launch, watch the multiplier surge, and cash out before the rocket burns.'}
+            <h1 className="wow-title text-2xl md:text-3xl">WOW</h1>
+            <p className="text-xs text-slate-400 md:text-sm">
+              {playingView ? 'Aviator Pro Arena' : 'Premium crash game experience'}
             </p>
           </div>
 
           {session?.user && (
-            <div className="wow-toolbar-meta">
-              <span className="wow-pill">{signedInLabel}</span>
-              <button className="wow-btn wow-btn-secondary" onClick={handleSignOut}>
+            <div className="hidden flex-wrap items-center gap-2 lg:flex">
+              {TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                    activeTab === tab.key
+                      ? 'bg-gradient-to-r from-wow-purple to-wow-pink text-[#130320]'
+                      : 'border border-slate-700 bg-slate-900 text-slate-300 hover:text-white'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {session?.user ? (
+            <div className="flex items-center gap-2">
+              <span className="wow-pill max-w-[180px] truncate">{signedInLabel}</span>
+              <button className="wow-btn-secondary" onClick={handleSignOut}>
                 Sign Out
               </button>
             </div>
+          ) : (
+            <span className="wow-pill">Guest Mode</span>
           )}
         </div>
-      </header>
 
-      {session?.user ? (
-        <div className="wow-grid">
-          <div className="wow-tabbar">
-            {(['play', 'stats', 'leaderboard', 'ocr'] as const).map((tab) => (
+        {session?.user && (
+          <div className="mt-3 flex flex-wrap gap-2 lg:hidden">
+            {TABS.map((tab) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`wow-btn ${activeTab === tab ? 'wow-tab-active' : 'wow-btn-secondary'}`}
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                  activeTab === tab.key
+                    ? 'bg-gradient-to-r from-wow-purple to-wow-pink text-[#130320]'
+                    : 'border border-slate-700 bg-slate-900 text-slate-300'
+                }`}
               >
-                {tab === 'play' ? 'Play' : tab === 'stats' ? 'Stats' : tab === 'leaderboard' ? 'Leaderboard' : 'OCR'}
+                {tab.label}
               </button>
             ))}
           </div>
+        )}
+      </nav>
 
+      {session?.user ? (
+        <section className="space-y-4">
           {activeTab === 'play' && <AviatorGame />}
           {activeTab === 'stats' && <PlayerStats user={user} userId={session.user.id} />}
           {activeTab === 'leaderboard' && <Leaderboard />}
           {activeTab === 'ocr' && <OcrScanner />}
-        </div>
+        </section>
       ) : (
-        <div className="wow-grid">
-          <section className="wow-card">
-            <h2 style={{ marginTop: 0 }}>Sign In to WOW</h2>
+        <section className="grid gap-4 lg:grid-cols-2">
+          <div className="wow-card">
+            <h2 className="mb-4 mt-0 text-2xl font-extrabold text-slate-100">Sign In to WOW</h2>
 
-            <div className="wow-auth-toggle" style={{ marginBottom: 18 }}>
+            <div className="mb-4 flex gap-2">
               <button
                 onClick={() => setAuthMode('email')}
-                className={`wow-btn ${authMode === 'email' ? 'wow-tab-active' : 'wow-btn-secondary'}`}
+                className={authMode === 'email' ? 'wow-btn-primary' : 'wow-btn-secondary'}
               >
                 Email OTP
               </button>
               <button
                 onClick={() => setAuthMode('phone')}
-                className={`wow-btn ${authMode === 'phone' ? 'wow-tab-active' : 'wow-btn-secondary'}`}
+                className={authMode === 'phone' ? 'wow-btn-primary' : 'wow-btn-secondary'}
               >
                 Phone OTP
               </button>
             </div>
 
             {authMode === 'email' ? (
-              <label className="wow-field" style={{ marginBottom: 16 }}>
+              <label className="mb-4 block">
                 <span className="wow-label">Email Address</span>
                 <input
                   value={email}
@@ -307,7 +343,7 @@ export default function Home() {
                 />
               </label>
             ) : (
-              <label className="wow-field" style={{ marginBottom: 16 }}>
+              <label className="mb-4 block">
                 <span className="wow-label">Phone Number</span>
                 <input
                   value={phone}
@@ -321,27 +357,26 @@ export default function Home() {
 
             <button
               onClick={handleSignIn}
-              className="wow-btn wow-btn-primary"
-              style={{ width: '100%', fontSize: 16 }}
+              className="wow-btn-primary w-full text-base"
               disabled={sendingOtp || otpCooldownSeconds > 0}
             >
               {sendingOtp ? 'Sending...' : otpCooldownSeconds > 0 ? `Retry in ${otpCooldownSeconds}s` : 'Send OTP'}
             </button>
 
             {message && <p className={`wow-message ${isError ? 'wow-message-error' : ''}`}>{message}</p>}
-          </section>
+          </div>
 
-          <section className="wow-card">
-            <h3 style={{ marginTop: 0 }}>How WOW Works</h3>
-            <ul style={{ color: '#d8cbf4', lineHeight: 1.9, marginBottom: 0, paddingLeft: 20 }}>
+          <div className="wow-card">
+            <h3 className="mb-3 mt-0 text-xl font-bold text-slate-100">How WOW Works</h3>
+            <ul className="space-y-2 pl-5 text-slate-300">
               <li>Login with OTP from email or phone.</li>
-              <li>Set your wager and launch a new round.</li>
-              <li>Track the live multiplier as the rocket climbs.</li>
+              <li>Place your wager and launch a round.</li>
+              <li>Watch multiplier rise in real time.</li>
               <li>Cash out before crash to lock profit.</li>
-              <li>Use leaderboard and stats to improve strategy.</li>
+              <li>Track your progress on stats and leaderboard.</li>
             </ul>
-          </section>
-        </div>
+          </div>
+        </section>
       )}
     </main>
   );
