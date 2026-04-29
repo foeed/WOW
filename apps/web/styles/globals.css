@@ -91,4 +91,60 @@
   .bg-wow-panel {
     background: linear-gradient(180deg, #15181f, #0f1218);
   }
+
+  .wow-preflight-bar {
+    background: linear-gradient(90deg, #fcbf49, #ff8f28, #ffe08a);
+    box-shadow: 0 0 18px rgba(251, 191, 36, 0.45);
+    transition: width 0.16s ease-out;
+  }
+
+  .wow-outcome-banner {
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(6px);
+    animation: wowOutcomePop 0.72s ease-out;
+  }
+
+  .wow-outcome-win {
+    background: linear-gradient(120deg, rgba(16, 185, 129, 0.88), rgba(5, 150, 105, 0.9));
+    box-shadow: 0 0 26px rgba(16, 185, 129, 0.4);
+    color: #ecfdf5;
+  }
+
+  .wow-outcome-loss {
+    background: linear-gradient(120deg, rgba(239, 68, 68, 0.86), rgba(185, 28, 28, 0.88));
+    box-shadow: 0 0 26px rgba(239, 68, 68, 0.35);
+    color: #fff1f2;
+  }
+
+  .wow-timeline-cursor {
+    box-shadow: 0 0 14px rgba(251, 191, 36, 0.72);
+    animation: wowCursorPulse 1.2s ease-in-out infinite;
+  }
+}
+
+@keyframes wowOutcomePop {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.92);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(0) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes wowCursorPulse {
+  0% {
+    transform: translateX(-50%) scale(0.95);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.08);
+  }
+  100% {
+    transform: translateX(-50%) scale(0.95);
+  }
 }

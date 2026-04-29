@@ -1,0 +1,29 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fuselageGradient" x1="84" y1="256" x2="444" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE2EC" />
+      <stop offset="1" stop-color="#FF3D78" />
+    </linearGradient>
+    <linearGradient id="wingGradient" x1="126" y1="198" x2="380" y2="332" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF8FB2" />
+      <stop offset="1" stop-color="#CA1B53" />
+    </linearGradient>
+  </defs>
+
+  <g id="airplane-placeholder" opacity="0.98">
+    <path
+      id="fuselage"
+      d="M64 248C64 236 73 226 85 226H214L302 126C316 110 342 122 340 143L334 226H434C450 226 462 239 462 256C462 273 450 286 434 286H334L340 369C342 390 316 402 302 386L214 286H85C73 286 64 276 64 264V248Z"
+      fill="url(#fuselageGradient)"
+    />
+
+    <path
+      id="wing"
+      d="M188 224H300L356 170C364 162 376 160 386 166C395 172 400 183 398 194L392 224H426C441 224 452 236 452 250V262C452 276 441 288 426 288H392L398 318C400 329 395 340 386 346C376 352 364 350 356 342L300 288H188L123 342C115 350 103 352 94 346C85 340 80 329 82 318L88 288H78C65 288 54 277 54 264V248C54 235 65 224 78 224H88L82 194C80 183 85 172 94 166C103 160 115 162 123 170L188 224Z"
+      fill="url(#wingGradient)"
+      fill-opacity="0.82"
+    />
+
+    <circle id="cockpit" cx="154" cy="256" r="20" fill="#FFF4F8" fill-opacity="0.72" />
+  </g>
+</svg>
