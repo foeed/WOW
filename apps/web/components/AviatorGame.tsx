@@ -213,7 +213,7 @@ export function AviatorGame(props: AviatorGameProps) {
           <div className="bg-amber-500 py-1 text-center text-sm font-extrabold tracking-wide text-amber-100">R3F MODE</div>
 
           <div className="relative overflow-hidden border-b border-slate-800 bg-[radial-gradient(circle_at_55%_42%,#1d5678_0%,#021424_48%,#00050a_90%)]">
-            <R3FGameScene progress={progress} playing={playing} />
+            <R3FGameScene progress={progress} playing={playing} curveType="bezier" />
 
             <div className="pointer-events-none absolute left-1/2 top-[44%] z-20 -translate-x-1/2 -translate-y-1/2 text-5xl font-black text-slate-100 drop-shadow-[0_0_24px_rgba(255,255,255,0.3)] md:text-7xl">
               {formatOdd(multiplier)}
