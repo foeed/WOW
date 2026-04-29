@@ -10,6 +10,7 @@ Create `.env.local`:
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_SITE_URL=https://wow-1.vercel.app
 NEXT_PUBLIC_API_URL=http://localhost:3333
 
 # Optional: OCR (for backend OCR endpoint)

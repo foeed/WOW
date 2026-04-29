@@ -10,6 +10,19 @@ import { User } from '../types';
 type AuthMode = 'email' | 'phone';
 type TabType = 'play' | 'stats' | 'leaderboard' | 'ocr';
 
+function getAuthRedirectUrl(): string {
+  let url =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_VERCEL_URL ||
+    (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+
+  if (!url.startsWith('http')) {
+    url = `https://${url}`;
+  }
+
+  return url.endsWith('/') ? url : `${url}/`;
+}
+
 function parseAuthHashError(): string | null {
   if (typeof window === 'undefined') return null;
 
@@ -141,7 +154,7 @@ export default function Home() {
         const { error } = await client.auth.signInWithOtp({
           email: email.trim(),
           options: {
-            emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/` : undefined,
+            emailRedirectTo: getAuthRedirectUrl(),
           },
         });
 
