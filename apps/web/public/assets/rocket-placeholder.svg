@@ -1,28 +1,74 @@
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bodyGradient" x1="170" y1="70" x2="344" y2="432" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FFEBC8" />
-      <stop offset="0.55" stop-color="#FFB547" />
-      <stop offset="1" stop-color="#E06A1B" />
+    <linearGradient id="rocket_shell" x1="445" y1="106" x2="612" y2="712" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F8FBFF"/>
+      <stop offset="0.33" stop-color="#D6DEE8"/>
+      <stop offset="0.64" stop-color="#A8B3C0"/>
+      <stop offset="1" stop-color="#808B98"/>
     </linearGradient>
-    <linearGradient id="finGradient" x1="138" y1="284" x2="256" y2="418" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FFCC6B" />
-      <stop offset="1" stop-color="#D75210" />
+    <linearGradient id="rocket_shadow" x1="367" y1="233" x2="650" y2="640" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6A7480" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#1A2029" stop-opacity="0.55"/>
     </linearGradient>
-    <linearGradient id="glassGradient" x1="256" y1="160" x2="256" y2="226" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FFFCE7" />
-      <stop offset="1" stop-color="#FFD66B" />
+    <linearGradient id="nose_tip" x1="512" y1="72" x2="512" y2="202" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#B8C3D0"/>
     </linearGradient>
+    <linearGradient id="fin_red" x1="248" y1="553" x2="426" y2="863" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#EF5E46"/>
+      <stop offset="1" stop-color="#7D1F14"/>
+    </linearGradient>
+    <linearGradient id="fin_red_r" x1="777" y1="553" x2="599" y2="863" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#EF5E46"/>
+      <stop offset="1" stop-color="#7D1F14"/>
+    </linearGradient>
+    <linearGradient id="window_glass" x1="512" y1="274" x2="512" y2="404" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#CFF7FF"/>
+      <stop offset="0.62" stop-color="#7EC2E2"/>
+      <stop offset="1" stop-color="#4C7A9C"/>
+    </linearGradient>
+    <radialGradient id="flame_core" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(512 851) rotate(90) scale(292 124)">
+      <stop offset="0" stop-color="#FFF7B2"/>
+      <stop offset="0.43" stop-color="#FFD66B"/>
+      <stop offset="0.82" stop-color="#FF9937"/>
+      <stop offset="1" stop-color="#FF5B1F"/>
+    </radialGradient>
+    <radialGradient id="flame_outer" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(512 872) rotate(90) scale(364 196)">
+      <stop offset="0" stop-color="#FFD470" stop-opacity="0.78"/>
+      <stop offset="0.64" stop-color="#FF7D2A" stop-opacity="0.46"/>
+      <stop offset="1" stop-color="#FF5B1F" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="210" y="566" width="604" height="420" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
   </defs>
 
-  <g id="rocket-placeholder" transform="rotate(20 256 256)">
-    <path d="M256 54C317 105 349 184 349 282V325H163V282C163 184 195 105 256 54Z" fill="url(#bodyGradient)" />
-    <path d="M189 325H323L363 425H149L189 325Z" fill="url(#finGradient)" />
-    <path d="M149 425L109 468C100 478 84 468 89 456L122 385L149 425Z" fill="#BE3F0E" />
-    <path d="M363 425L403 468C412 478 428 468 423 456L390 385L363 425Z" fill="#BE3F0E" />
-    <path d="M256 333L297 420H215L256 333Z" fill="#8A2C09" />
-    <circle cx="256" cy="194" r="37" fill="url(#glassGradient)" />
-    <circle cx="256" cy="194" r="23" fill="#FFF4CE" fill-opacity="0.68" />
-    <rect x="206" y="246" width="100" height="16" rx="8" fill="#FFF0CB" fill-opacity="0.55" />
+  <g id="rocket-realistic" transform="rotate(18 512 512)">
+    <path d="M512 94C640 216 709 385 709 588V676H315V588C315 385 384 216 512 94Z" fill="url(#rocket_shell)"/>
+    <path d="M512 94C640 216 709 385 709 588V676H315V588C315 385 384 216 512 94Z" fill="url(#rocket_shadow)"/>
+    <path d="M512 73L566 158H458L512 73Z" fill="url(#nose_tip)"/>
+
+    <path d="M315 573L213 806C204 826 220 846 242 841L349 817L416 676L315 573Z" fill="url(#fin_red)"/>
+    <path d="M709 573L811 806C820 826 804 846 782 841L675 817L608 676L709 573Z" fill="url(#fin_red_r)"/>
+
+    <path d="M373 674H651L700 805H324L373 674Z" fill="#5A616D"/>
+    <path d="M420 674H604V805H420V674Z" fill="#323A45"/>
+
+    <circle cx="512" cy="336" r="72" fill="#E8F2FF"/>
+    <circle cx="512" cy="336" r="58" fill="url(#window_glass)"/>
+    <ellipse cx="494" cy="312" rx="17" ry="12" fill="#FFFFFF" fill-opacity="0.62"/>
+
+    <rect x="415" y="438" width="194" height="39" rx="18" fill="#A8B3C0"/>
+    <rect x="444" y="450" width="136" height="15" rx="7" fill="#727D8A"/>
+
+    <ellipse cx="512" cy="739" rx="89" ry="42" fill="#2C2F35"/>
+    <ellipse cx="512" cy="744" rx="58" ry="24" fill="#121418"/>
+
+    <g filter="url(#glow)">
+      <path d="M512 705C586 787 620 874 582 940C556 986 468 986 442 940C404 874 438 787 512 705Z" fill="url(#flame_outer)"/>
+    </g>
+
+    <path d="M512 716C567 781 592 848 563 900C544 933 480 933 461 900C432 848 457 781 512 716Z" fill="url(#flame_core)"/>
+    <path d="M512 748C548 795 564 842 545 878C533 901 491 901 479 878C460 842 476 795 512 748Z" fill="#FFF8CD" fill-opacity="0.82"/>
   </g>
 </svg>
