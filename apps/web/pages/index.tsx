@@ -95,15 +95,32 @@ export default function Home() {
 
     const client = supabase;
 
-    client.auth.getSession().then(({ data }) => {
+    const loadUserProfile = async (userId: string) => {
+      const { data } = await client
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      if (data) {
+        setUser(data as User);
+      }
+    };
+
+    client.auth.getSession().then(async ({ data }) => {
       setSession(data.session);
+      if (data.session?.user?.id) {
+        await loadUserProfile(data.session.user.id);
+      }
     });
 
-    const { data: listener } = client.auth.onAuthStateChange((event, nextSession) => {
+    const { data: listener } = client.auth.onAuthStateChange(async (event, nextSession) => {
       setSession(nextSession);
       if (event === 'SIGNED_IN') {
         setIsError(false);
         setMessage('Welcome to WOW. You are signed in.');
+      }
+      if (nextSession?.user?.id) {
+        await loadUserProfile(nextSession.user.id);
       }
     });
 

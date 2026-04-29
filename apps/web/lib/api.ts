@@ -6,8 +6,18 @@ function apiUrl(path: string): string {
 }
 
 async function request(path: string, init?: RequestInit) {
+  if (!API_BASE) {
+    throw new Error('API is not configured. Set NEXT_PUBLIC_API_URL in Vercel environment variables.');
+  }
+
   const response = await fetch(apiUrl(path), init);
-  const data = await response.json();
+  const contentType = response.headers.get('content-type') || '';
+  const isJson = contentType.includes('application/json');
+  const data = isJson ? await response.json() : null;
+
+  if (!isJson) {
+    throw new Error('API returned non-JSON response. Check NEXT_PUBLIC_API_URL and API deployment status.');
+  }
 
   if (!response.ok || data?.error) {
     const message = data?.error || `Request failed with status ${response.status}`;

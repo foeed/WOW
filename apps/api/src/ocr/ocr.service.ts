@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import fetch from 'node-fetch';
 import { OcrResponseDto } from './dto/ocr-response.dto';
 
 @Injectable()
