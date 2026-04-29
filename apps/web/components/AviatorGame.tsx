@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useState } from 'react';
 
 interface AviatorGameProps {
@@ -14,6 +15,15 @@ interface BetRow {
   win?: number;
   mine?: boolean;
 }
+
+const R3FGameScene = dynamic(() => import('./R3FGameScene').then((mod) => mod.R3FGameScene), {
+  ssr: false,
+  loading: () => (
+    <div className="grid h-full min-h-[420px] place-items-center bg-slate-950 text-sm text-slate-400">
+      Initializing 3D scene...
+    </div>
+  ),
+});
 
 const CRASH_MIN = 1.25;
 const CRASH_MAX = 6.5;
@@ -46,9 +56,6 @@ const HISTORY_DEFAULT = [
   6.78, 1.03, 1.4, 12.78, 2.99, 1.43, 1.0, 1.54,
 ];
 
-const STAGE_WIDTH = 1000;
-const STAGE_HEIGHT = 520;
-
 function formatOdd(value: number): string {
   return `${value.toFixed(2)}x`;
 }
@@ -74,34 +81,6 @@ export function AviatorGame(props: AviatorGameProps) {
     const raw = (multiplier - 1) / (Math.max(crashAt, 1.01) - 1);
     return Math.max(0.02, Math.min(raw, 1));
   }, [multiplier, crashAt]);
-
-  const chartPoints = useMemo(() => {
-    const steps = 42;
-    const points: Array<[number, number]> = [];
-
-    for (let i = 0; i <= steps; i += 1) {
-      const t = (progress * i) / steps;
-      const x = 16 + t * (STAGE_WIDTH - 32);
-      const y = STAGE_HEIGHT - 8 - Math.pow(t, 2.15) * (STAGE_HEIGHT * 0.75);
-      points.push([x, y]);
-    }
-
-    return points;
-  }, [progress]);
-
-  const curvePath = useMemo(
-    () => chartPoints.map(([x, y], idx) => `${idx === 0 ? 'M' : 'L'} ${x} ${y}`).join(' '),
-    [chartPoints],
-  );
-
-  const fillPath = useMemo(() => {
-    if (!chartPoints.length) return '';
-    const [startX] = chartPoints[0];
-    const [endX] = chartPoints[chartPoints.length - 1];
-    return `${curvePath} L ${endX} ${STAGE_HEIGHT} L ${startX} ${STAGE_HEIGHT} Z`;
-  }, [chartPoints, curvePath]);
-
-  const planePoint = chartPoints[chartPoints.length - 1] || [0, 0];
 
   useEffect(() => {
     if (!playing) return;
@@ -231,29 +210,12 @@ export function AviatorGame(props: AviatorGameProps) {
         </aside>
 
         <div className="grid h-full min-h-[620px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-2xl border border-slate-800 bg-slate-950">
-          <div className="bg-amber-500 py-1 text-center text-sm font-extrabold tracking-wide text-amber-100">FUN MODE</div>
+          <div className="bg-amber-500 py-1 text-center text-sm font-extrabold tracking-wide text-amber-100">R3F MODE</div>
 
           <div className="relative overflow-hidden border-b border-slate-800 bg-[radial-gradient(circle_at_55%_42%,#1d5678_0%,#021424_48%,#00050a_90%)]">
-            <div
-              className="absolute inset-[-60px] opacity-90"
-              style={{
-                background:
-                  'repeating-conic-gradient(from 270deg at 0% 100%, rgba(255,255,255,0.06) 0deg 6deg, rgba(0,0,0,0) 6deg 12deg)',
-              }}
-            />
+            <R3FGameScene progress={progress} playing={playing} />
 
-            <svg viewBox={`0 0 ${STAGE_WIDTH} ${STAGE_HEIGHT}`} className="absolute inset-0 h-full w-full" preserveAspectRatio="none">
-              <path d={fillPath} fill="rgba(175, 7, 29, 0.68)" />
-              <path d={curvePath} fill="none" stroke="#ff0048" strokeWidth={4} />
-
-              <g transform={`translate(${planePoint[0]}, ${planePoint[1]}) rotate(-14)`}>
-                <path d="M 0 0 L 56 -14 L 44 -2 L 73 0 L 44 2 L 56 14 Z" fill="#ff0048" />
-                <circle cx="74" cy="0" r="7" fill="transparent" stroke="#ff0048" strokeWidth={2} />
-                <path d="M 74 -8 L 74 8 M 66 0 L 82 0" stroke="#ff678f" strokeWidth={2} strokeLinecap="round" />
-              </g>
-            </svg>
-
-            <div className="absolute left-1/2 top-[44%] z-20 -translate-x-1/2 -translate-y-1/2 text-5xl font-black text-slate-100 drop-shadow-[0_0_24px_rgba(255,255,255,0.3)] md:text-7xl">
+            <div className="pointer-events-none absolute left-1/2 top-[44%] z-20 -translate-x-1/2 -translate-y-1/2 text-5xl font-black text-slate-100 drop-shadow-[0_0_24px_rgba(255,255,255,0.3)] md:text-7xl">
               {formatOdd(multiplier)}
             </div>
           </div>
