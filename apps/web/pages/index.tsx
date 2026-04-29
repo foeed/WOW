@@ -62,6 +62,7 @@ export default function Home() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('play');
+  const [showWowLoading, setShowWowLoading] = useState(true);
   const [sendingOtp, setSendingOtp] = useState(false);
   const [otpCooldownUntil, setOtpCooldownUntil] = useState<number>(0);
   const [otpCooldownSeconds, setOtpCooldownSeconds] = useState(0);
@@ -72,6 +73,7 @@ export default function Home() {
   }, [session]);
 
   useEffect(() => {
+    const bootTimer = window.setTimeout(() => setShowWowLoading(false), 1200);
     const hashError = parseAuthHashError();
     if (hashError) {
       setMessage(hashError);
@@ -99,9 +101,17 @@ export default function Home() {
     });
 
     return () => {
+      window.clearTimeout(bootTimer);
       listener?.subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (!session?.user || activeTab !== 'play') return;
+    setShowWowLoading(true);
+    const tabTimer = window.setTimeout(() => setShowWowLoading(false), 850);
+    return () => window.clearTimeout(tabTimer);
+  }, [activeTab, session?.user]);
 
   useEffect(() => {
     if (!otpCooldownUntil) {
@@ -218,7 +228,12 @@ export default function Home() {
   };
 
   return (
-    <main className="wow-shell">
+    <main className={`wow-shell ${session?.user && activeTab === 'play' ? 'wow-shell-full' : ''}`}>
+      {showWowLoading && (
+        <div className="wow-loader-overlay" aria-live="polite" aria-label="Loading WOW">
+          <div className="wow-loader-mark">WOW...</div>
+        </div>
+      )}
       <header className="wow-header" style={{ marginBottom: 30 }}>
         <h1 className="wow-hero-glow">WOW</h1>
         <p className="wow-subtitle">

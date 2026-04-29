@@ -39,6 +39,46 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 28px 16px 56px;
+  position: relative;
+}
+
+.wow-shell-full {
+  max-width: 100%;
+  min-height: 100vh;
+  padding: 10px 10px 14px;
+}
+
+.wow-shell-full .wow-header {
+  margin-bottom: 10px !important;
+}
+
+.wow-shell-full .wow-header h1 {
+  font-size: clamp(1.8rem, 2.2vw, 2.4rem);
+}
+
+.wow-shell-full .wow-subtitle {
+  max-width: none;
+}
+
+.wow-loader-overlay {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(187, 93, 255, 0.3), rgba(6, 3, 15, 0.96) 50%),
+    #06030f;
+  z-index: 5000;
+  display: grid;
+  place-items: center;
+}
+
+.wow-loader-mark {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(2.2rem, 7vw, 5rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #f7eeff;
+  text-shadow: 0 0 18px rgba(187, 93, 255, 0.7), 0 0 40px rgba(69, 248, 255, 0.45);
+  animation: wowLoaderPulse 1s ease-in-out infinite;
 }
 
 .wow-header h1 {
@@ -205,6 +245,18 @@ body {
   }
   50% {
     text-shadow: 0 0 36px rgba(255, 69, 222, 0.8);
+  }
+}
+
+@keyframes wowLoaderPulse {
+  0%,
+  100% {
+    transform: scale(0.96);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
   }
 }
 
