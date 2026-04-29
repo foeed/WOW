@@ -235,29 +235,30 @@ export default function Home() {
         </div>
       )}
       <header className="wow-header" style={{ marginBottom: 30 }}>
-        <h1 className="wow-hero-glow">WOW</h1>
-        <p className="wow-subtitle">
-          Neon-speed crash gameplay with OTP login. Launch, watch the multiplier surge, and cash out before the rocket burns.
-        </p>
-      </header>
+        <div className="wow-toolbar">
+          <div>
+            <h1 className="wow-hero-glow">WOW</h1>
+            <p className="wow-subtitle">
+              {session?.user && activeTab === 'play'
+                ? 'Aviator Pro Arena'
+                : 'Neon-speed crash gameplay with OTP login. Launch, watch the multiplier surge, and cash out before the rocket burns.'}
+            </p>
+          </div>
 
-      {session?.user ? (
-        <div className="wow-grid">
-          <div className="wow-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-            <div>
-              <div className="wow-label">Signed in as</div>
-              <div style={{ fontWeight: 700, fontSize: 18 }}>{signedInLabel}</div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span className="wow-pill">WOW Pilot</span>
+          {session?.user && (
+            <div className="wow-toolbar-meta">
+              <span className="wow-pill">{signedInLabel}</span>
               <button className="wow-btn wow-btn-secondary" onClick={handleSignOut}>
                 Sign Out
               </button>
             </div>
-          </div>
+          )}
+        </div>
+      </header>
 
-          <div className="wow-tabs">
+      {session?.user ? (
+        <div className="wow-grid">
+          <div className="wow-tabbar">
             {(['play', 'stats', 'leaderboard', 'ocr'] as const).map((tab) => (
               <button
                 key={tab}

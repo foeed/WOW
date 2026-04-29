@@ -58,6 +58,7 @@ body {
 
 .wow-shell-full .wow-subtitle {
   max-width: none;
+  font-size: 0.9rem;
 }
 
 .wow-loader-overlay {
@@ -95,6 +96,26 @@ body {
   margin: 0;
   color: var(--muted);
   max-width: 760px;
+}
+
+.wow-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.wow-toolbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wow-tabbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .wow-card {
@@ -267,5 +288,10 @@ body {
 
   .wow-shell {
     padding-top: 20px;
+  }
+
+  .wow-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
