@@ -49,6 +49,9 @@ export default function Home() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('play');
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [otpCooldownUntil, setOtpCooldownUntil] = useState<number>(0);
+  const [otpCooldownSeconds, setOtpCooldownSeconds] = useState(0);
 
   const signedInLabel = useMemo(() => {
     if (!session?.user) return '';
@@ -87,7 +90,34 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!otpCooldownUntil) {
+      setOtpCooldownSeconds(0);
+      return;
+    }
+
+    const tick = () => {
+      const remaining = Math.max(0, Math.ceil((otpCooldownUntil - Date.now()) / 1000));
+      setOtpCooldownSeconds(remaining);
+    };
+
+    tick();
+    const timer = window.setInterval(tick, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [otpCooldownUntil]);
+
+  const startOtpCooldown = (seconds: number) => {
+    setOtpCooldownUntil(Date.now() + seconds * 1000);
+  };
+
   const handleSignIn = async () => {
+    if (otpCooldownSeconds > 0) {
+      setIsError(true);
+      setMessage(`Please wait ${otpCooldownSeconds}s before requesting another OTP.`);
+      return;
+    }
+
     if (!supabase) {
       setIsError(true);
       setMessage('Supabase is not configured for this environment.');
@@ -106,20 +136,31 @@ export default function Home() {
         return;
       }
 
-      const { error } = await client.auth.signInWithOtp({
-        email: email.trim(),
-        options: {
-          emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/` : undefined,
-        },
-      });
+      setSendingOtp(true);
+      try {
+        const { error } = await client.auth.signInWithOtp({
+          email: email.trim(),
+          options: {
+            emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/` : undefined,
+          },
+        });
 
-      if (error) {
-        setIsError(true);
-        setMessage(error.message);
-        return;
+        if (error) {
+          setIsError(true);
+          if (error.message.toLowerCase().includes('rate limit')) {
+            startOtpCooldown(60);
+            setMessage('Email rate limit reached. Please wait 60 seconds, then try again.');
+          } else {
+            setMessage(error.message);
+          }
+          return;
+        }
+
+        startOtpCooldown(60);
+        setMessage('Check your inbox for the WOW login link.');
+      } finally {
+        setSendingOtp(false);
       }
-
-      setMessage('Check your inbox for the WOW login link.');
       return;
     }
 
@@ -129,14 +170,25 @@ export default function Home() {
       return;
     }
 
-    const { error } = await client.auth.signInWithOtp({ phone: phone.trim() });
-    if (error) {
-      setIsError(true);
-      setMessage(error.message);
-      return;
-    }
+    setSendingOtp(true);
+    try {
+      const { error } = await client.auth.signInWithOtp({ phone: phone.trim() });
+      if (error) {
+        setIsError(true);
+        if (error.message.toLowerCase().includes('rate limit')) {
+          startOtpCooldown(60);
+          setMessage('OTP rate limit reached. Please wait 60 seconds, then try again.');
+        } else {
+          setMessage(error.message);
+        }
+        return;
+      }
 
-    setMessage('Check your phone for your OTP code.');
+      startOtpCooldown(60);
+      setMessage('Check your phone for your OTP code.');
+    } finally {
+      setSendingOtp(false);
+    }
   };
 
   const handleSignOut = async () => {
@@ -238,8 +290,13 @@ export default function Home() {
               </label>
             )}
 
-            <button onClick={handleSignIn} className="wow-btn wow-btn-primary" style={{ width: '100%', fontSize: 16 }}>
-              Send OTP
+            <button
+              onClick={handleSignIn}
+              className="wow-btn wow-btn-primary"
+              style={{ width: '100%', fontSize: 16 }}
+              disabled={sendingOtp || otpCooldownSeconds > 0}
+            >
+              {sendingOtp ? 'Sending...' : otpCooldownSeconds > 0 ? `Retry in ${otpCooldownSeconds}s` : 'Send OTP'}
             </button>
 
             {message && <p className={`wow-message ${isError ? 'wow-message-error' : ''}`}>{message}</p>}
